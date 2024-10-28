@@ -4,6 +4,7 @@ on: [push, pull_request]
 
 permissions:
   contents: read
+  actions: write
 
 jobs:
   build-and-run:
