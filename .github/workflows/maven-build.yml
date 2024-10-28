@@ -30,6 +30,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+    
+      - name: Debug Active Container
+        uses: docker ps -a
 
       - name: Run SpotBugs
         run: docker exec spring_boot_app ./mvnw spotbugs:check
@@ -52,7 +55,7 @@ jobs:
         run: snyk auth $SNYK_TOKEN
 
       - name: Run Snyk Test
-        run: snyk test --file=pom.xml --fail-on=none
+        run: snyk test --file=pom.xml
 
   test:
     runs-on: ubuntu-latest
