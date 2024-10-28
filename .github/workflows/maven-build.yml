@@ -40,10 +40,7 @@ jobs:
         uses: snyk/actions/maven-3-jdk-17@master
         continue-on-error: true
         with:
-          args: |
-            test
-            --file=pom.xml
-            --sarif-file-output=snyk.sarif
+          args: --sarif-file-output=snyk.sarif
           json: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
