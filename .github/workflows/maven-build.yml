@@ -54,7 +54,7 @@ jobs:
           sarif_file: snyk.sarif
       
       - name: Check for Critical vulnerabilities
-        uses: |
+        run: |
           if [ -f snyk.json ]; then
             if grep -q "Critical" snyk.json; then
               echo "Critical vulnerabilities found!"
