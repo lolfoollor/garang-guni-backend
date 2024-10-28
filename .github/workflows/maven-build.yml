@@ -22,9 +22,45 @@ jobs:
 
       - name: Build and run Docker Compose
         run: docker compose up -d --build
+  
+  spotbugs:
+    runs-on: ubuntu-latest
+    needs: build-and-run 
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Run SpotBugs
         run: docker exec spring_boot_app ./mvnw spotbugs:check
+
+  snyk:
+    runs-on: ubuntu-latest
+    needs: build-and-run 
+
+    env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth $SNYK_TOKEN
+
+      - name: Run Snyk Test
+        run: snyk test --all-projects --file=pom.xml --fail-on=none
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build-and-run
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Run Tests
         run: docker exec spring_boot_app ./mvnw test
