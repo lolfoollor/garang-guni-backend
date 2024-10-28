@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run SpotBugs
-        run: docker compose exec spring_boot_app ./mvnw spotbugs:check
+        run: docker exec spring_boot_app ./mvnw spotbugs:check
 
   snyk:
     runs-on: ubuntu-latest
@@ -63,4 +63,4 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Tests
-        run: docker compose exec spring_boot_app ./mvnw test
+        run: docker exec spring_boot_app ./mvnw test
