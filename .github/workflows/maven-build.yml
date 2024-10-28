@@ -44,7 +44,7 @@ jobs:
             test
             --file=pom.xml
             --sarif-file-output=snyk.sarif
-            --json=true
+          json: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     
