@@ -6,6 +6,7 @@ logs/
 !**/src/test/**/target/
 /logs
 /postgres-data
+snyk-results.json
 
 ### STS ###
 .apt_generated

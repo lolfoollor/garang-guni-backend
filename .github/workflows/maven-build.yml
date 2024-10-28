@@ -55,7 +55,16 @@ jobs:
         run: snyk auth $SNYK_TOKEN
 
       - name: Run Snyk Test
-        run: snyk test --file=pom.xml
+        run: snyk test --file=pom.xml --json > snyk-results.json
+      
+      - name: Verify Snyk for critical vulnerabilities
+        run: |
+          if jq '.vulnerabilities | map(select(.severity == "critical")) | length > 0' snyk-results.json; then
+            echo "Critical vulnerabilities found!";
+            exit 1;
+          else
+            echo "No critical vulnerabilities found.";
+          fi
 
   test:
     runs-on: ubuntu-latest
