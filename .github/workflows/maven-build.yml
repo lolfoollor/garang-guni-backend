@@ -80,6 +80,12 @@ jobs:
         run: |
           echo "Waiting for Spring Boot application to start..."
           sleep 60
+
+      - name: Get Active Dockers
+        run: docker ps
+
+      - name: Get Docker Logs
+        run: docker logs spring_boot_app
     
       - name: Run Jmeter Load Test
         run: |
