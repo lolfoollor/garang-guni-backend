@@ -83,14 +83,13 @@ jobs:
             -t ./booking_load_test_plan.jmx \
             -l ./results/test_load_results.jtl \
             -j ./results/jmeter_load.log \
-            -JtargetedServerName=localhost \
+            -JtargetedServerName=host.docker.internal \
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
             -JimageDir="./src/main/resources/static/test-photos" \
             -JnumOfThread=20 \
             -JnumOfLoop=20 \
-            -e -o ./results/report \
-            -LDEBUG
+            -e -o ./results/report
 
       - name: Copy Results from Container
         run: docker cp spring_boot_app:/app/results ./results
@@ -111,9 +110,6 @@ jobs:
 
       - name: Build and run Docker Compose
         run: docker compose -f docker-compose.test.yml up -d --build
-    
-      - name: Check Docker of Ip running
-        run: docker ps
 
       - name: Run Jmeter Performance Test
         run: |
@@ -122,7 +118,7 @@ jobs:
             -t ./booking_performance_test_plan.jmx \
             -l ./results/test_performance_results.jtl \
             -j ./results/jmeter_performance.log \
-            -JtargetedServerName=spring_boot_app \
+            -JtargetedServerName=host.docker.internal \
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
             -JimageDir="./src/main/resources/static/test-photos" \
