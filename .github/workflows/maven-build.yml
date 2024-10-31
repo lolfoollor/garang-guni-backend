@@ -83,7 +83,7 @@ jobs:
             -t ./booking_load_test_plan.jmx \
             -l ./results/test_load_results.jtl \
             -j ./results/jmeter_load.log \
-            -JtargetedServerName=spring_boot_app \
+            -JtargetedServerName=localhost \
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
             -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
@@ -123,7 +123,7 @@ jobs:
             -t ./booking_performance_test_plan.jmx \
             -l ./results/test_performance_results.jtl \
             -j ./results/jmeter_performance.log \
-            -JtargetedServerName=spring_boot_app \
+            -JtargetedServerName=localhost \
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
             -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
