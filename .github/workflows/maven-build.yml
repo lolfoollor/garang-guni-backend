@@ -93,6 +93,9 @@ jobs:
             -JnumOfThread=20 \
             -JnumOfLoop=20
 
+      - name: List Directory Structure Inside Container
+        run: docker exec spring_boot_app ls -R /app 
+
       - name: Upload Load Test Results
         uses: actions/upload-artifact@v3
         with:
@@ -132,6 +135,9 @@ jobs:
             -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
             -JnumOfThread=10 \
             -JnumOfLoop=10
+        
+      - name: List Directory Structure Inside Container
+        run: docker exec spring_boot_app ls -R /app 
 
       - name: Upload Performance Test Results
         uses: actions/upload-artifact@v3
