@@ -7,6 +7,7 @@ COPY config ./config
 COPY lombok.config ./
 COPY booking_load_test_plan.jmx ./
 COPY booking_performance_test_plan.jmx ./
+COPY check_failure_rate.sh ./
 RUN chmod 774 ./mvnw && ./mvnw clean install -DskipTests
 # Download and Install Jmeter
 RUN apt-get update && apt-get install -y \

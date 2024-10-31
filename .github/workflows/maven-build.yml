@@ -101,7 +101,7 @@ jobs:
             -JimageDir="./src/main/resources/static/test-photos" \
             -JnumOfThread=20 \
             -JnumOfLoop=20 \
-            -e -o ./results/report
+            -e -o ./results/load-report
 
       - name: Copy Results from Container
         run: docker cp spring_boot_app:/app/results ./results
@@ -114,7 +114,7 @@ jobs:
 
   jmeter-performance-test:
     runs-on: ubuntu-latest
-    needs: jmeter-load-test
+    needs: build-and-run
 
     env:
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
@@ -148,7 +148,7 @@ jobs:
             -JimageDir="./src/main/resources/static/test-photos" \
             -JnumOfThread=10 \
             -JnumOfLoop=10 \
-            -e -o ./results/report
+            -e -o ./results/performance-report
         
       - name: Copy Results from Container
         run: docker cp spring_boot_app:/app/results ./results
@@ -158,3 +158,37 @@ jobs:
         with:
           name: performance-test-${{ github.run_id }}
           path: ./results
+
+  verify-result-and-deploy-report:
+    runs-on: ubuntu-latest
+    needs: [jmeter-load-test, jmeter-performance-test]
+    steps:
+      - name: Download Load Test Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: load-test-${{ github.run_id }}
+
+      - name: Download Performance Test Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: performance-test-${{ github.run_id }}
+
+      - name: Deploy JMeter Load Test Reports to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./load-report
+          publish_branch: gh-pages-load
+
+      - name: Deploy JMeter Performance Test Reports to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./performance-report
+          publish_branch: gh-pages-performance
+
+      - name: Check JMeter Load Test Results if it exceed 5%
+        run: ./check_failure_rate.sh ./test_load_results.jtl 5
+    
+      - name: Check JMeter Performance Test Results if it exceed 5%
+        run: ./check_failure_rate.sh ./test_performance_results.jtl 5
