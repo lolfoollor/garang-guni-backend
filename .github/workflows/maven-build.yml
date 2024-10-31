@@ -149,7 +149,7 @@ jobs:
             -JimageDir="./src/main/resources/static/test-photos" \
             -JnumOfThread=10 \
             -JnumOfLoop=10 \
-            -e -o ./results/report 
+            -e -o ./results/report2 
         
       - name: Copy Results from Container
         run: docker cp spring_boot_app:/app/results ./results
