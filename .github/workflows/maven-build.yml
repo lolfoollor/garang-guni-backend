@@ -83,6 +83,11 @@ jobs:
       - name: Build and run Docker Compose
         run: docker compose -f docker-compose.test.yml up -d --build
 
+      - name: Wait for Spring Boot application to start
+        run: |
+          echo "Waiting for Spring Boot application to start..."
+          sleep 20
+
       - name: Run Jmeter Load Test
         run: |
           docker exec spring_boot_app \
@@ -128,7 +133,7 @@ jobs:
       - name: Wait for Spring Boot application to start
         run: |
           echo "Waiting for Spring Boot application to start..."
-          sleep 60
+          sleep 20
 
       - name: Run Jmeter Performance Test
         run: |
