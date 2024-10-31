@@ -190,7 +190,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./report
-          publish_branch: gh-pages
+          publish_branch: gh-pages-all
 
       - name: Check JMeter Load Test Results if it exceed 5%
         run: ./check_failure_rate.sh ./test_load_results.jtl 5
