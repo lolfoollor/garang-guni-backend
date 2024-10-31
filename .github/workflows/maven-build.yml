@@ -86,7 +86,7 @@ jobs:
             -JtargetedServerName=localhost \
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
-            -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
+            -JimageDir="./src/main/resources/static/test-photos" \
             -JnumOfThread=20 \
             -JnumOfLoop=20
         
@@ -126,7 +126,7 @@ jobs:
             -JtargetedServerName=localhost \
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
-            -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
+            -JimageDir="./src/main/resources/static/test-photos" \
             -JnumOfThread=10 \
             -JnumOfLoop=10
         
