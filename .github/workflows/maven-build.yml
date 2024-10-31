@@ -64,3 +64,77 @@ jobs:
             echo "No Snyk report generated."
             exit 1
           fi
+    
+  jmeter-load-test:
+    runs-on: ubuntu-latest
+    needs: build-and-run
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build and run Docker Compose
+        run: docker compose up -d --build
+    
+      - name: Run Jmeter Load Test
+        run: |
+          docker exec spring_boot_app \
+            jmeter -n \
+            -t /tests/booking_load_test_plan.jmx \
+            -l /results/test_load_results.jtl \
+            -j /results/jmeter_load.log \
+            -JtargetedServerName=spring_boot_app \
+            -JtargetedServerPort=8080 \
+            -JdurationThresholdInMs=500 \
+            -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
+            -JnumOfThread=100 \
+            -JnumOfLoop=100
+
+      - name: Upload Load Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: load-test-results-${{ github.run_id }}
+          path: ./results/test_load_results.jtl
+      
+      - name: Upload JMeter Logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: load-test-logs-${{ github.run_id }}
+          path: ./results/jmeter_load.log
+
+  jmeter-performance-test:
+    runs-on: ubuntu-latest
+    needs: build-and-run
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build and run Docker Compose
+        run: docker compose up -d --build
+    
+      - name: Run Jmeter Performance Test
+        run: |
+            docker exec spring_boot_app \
+            jmeter -n \
+            -t /tests/booking_performance_test_plan.jmx \
+            -l /results/test_performance_results.jtl \
+            -j /results/jmeter_performance.log \
+            -JtargetedServerName=spring_boot_app \
+            -JtargetedServerPort=8080 \
+            -JdurationThresholdInMs=500 \
+            -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
+            -JnumOfThread=50 \
+            -JnumOfLoop=100
+
+      - name: Upload Performance Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-test-results-${{ github.run_id }}
+          path: ./results/test_performance_results.jtl
+        
+      - name: Upload JMeter Logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-test-logs-${{ github.run_id }}
+          path: ./results/jmeter_performance.log
