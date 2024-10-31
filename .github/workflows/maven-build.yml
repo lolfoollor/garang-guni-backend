@@ -80,7 +80,7 @@ jobs:
         run: |
           docker exec spring_boot_app \
             jmeter -n \
-            -t /tests/booking_load_test_plan.jmx \
+            -t ./booking_load_test_plan.jmx \
             -l /results/test_load_results.jtl \
             -j /results/jmeter_load.log \
             -JtargetedServerName=spring_boot_app \
@@ -117,7 +117,7 @@ jobs:
         run: |
             docker exec spring_boot_app \
             jmeter -n \
-            -t /tests/booking_performance_test_plan.jmx \
+            -t ./booking_performance_test_plan.jmx \
             -l /results/test_performance_results.jtl \
             -j /results/jmeter_performance.log \
             -JtargetedServerName=spring_boot_app \
