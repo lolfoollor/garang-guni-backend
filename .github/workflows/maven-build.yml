@@ -16,6 +16,7 @@ jobs:
       SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       CONNECTION_TO_DATABASE_HOST_PORT: ${{ secrets.CONNECTION_TO_DATABASE_HOST_PORT }}
+      IMAGE_TAG: ${{ github.sha }}
 
     steps:
       - name: Checkout repository
