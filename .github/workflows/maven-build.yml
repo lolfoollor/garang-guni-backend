@@ -75,6 +75,11 @@ jobs:
 
       - name: Build and run Docker Compose
         run: docker compose -f docker-compose.test.yml up -d --build
+
+      - name: Wait for Spring Boot application to start
+        run: |
+          echo "Waiting for Spring Boot application to start..."
+          sleep 60
     
       - name: Run Jmeter Load Test
         run: |
@@ -83,7 +88,7 @@ jobs:
             -t ./booking_load_test_plan.jmx \
             -l ./results/test_load_results.jtl \
             -j ./results/jmeter_load.log \
-            -JtargetedServerName=host.docker.internal \
+            -JtargetedServerName=localhost \
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
             -JimageDir="./src/main/resources/static/test-photos" \
@@ -111,6 +116,11 @@ jobs:
       - name: Build and run Docker Compose
         run: docker compose -f docker-compose.test.yml up -d --build
 
+      - name: Wait for Spring Boot application to start
+        run: |
+          echo "Waiting for Spring Boot application to start..."
+          sleep 60
+
       - name: Run Jmeter Performance Test
         run: |
             docker exec spring_boot_app \
@@ -118,7 +128,7 @@ jobs:
             -t ./booking_performance_test_plan.jmx \
             -l ./results/test_performance_results.jtl \
             -j ./results/jmeter_performance.log \
-            -JtargetedServerName=host.docker.internal \
+            -JtargetedServerName=localhost \
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
             -JimageDir="./src/main/resources/static/test-photos" \
