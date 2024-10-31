@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Links</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
+        }
+        h1 {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .box {
+            display: block;
+            width: 200px;
+            height: 100px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border-radius: 8px;
+            line-height: 100px;
+            transition: background-color 0.3s;
+        }
+        .performance {
+            background-color: #4CAF50;
+        }
+        .load {
+            background-color: #2196F3;
+        }
+        .box:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Report Index</h1>
+    <div style="display: flex; gap: 20px;">
+        <a href="performance-report/" class="box performance">
+            Performance Report
+        </a>
+        <a href="load-report/" class="box load">
+            Load Report
+        </a>
+    </div>
+</body>
+</html>

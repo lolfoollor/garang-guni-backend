@@ -185,6 +185,9 @@ jobs:
       - name: Move Performance Report to Report Directory
         run: mv performance-report report/
 
+      - name: Move Basic Index Html page
+        run: mv index.html report/
+
       - name: Deploy JMeter Load Test Reports to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
