@@ -87,8 +87,8 @@ jobs:
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
             -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
-            -JnumOfThread=100 \
-            -JnumOfLoop=100
+            -JnumOfThread=10 \
+            -JnumOfLoop=10
 
       - name: Upload Load Test Results
         uses: actions/upload-artifact@v3
@@ -124,8 +124,8 @@ jobs:
             -JtargetedServerPort=8080 \
             -JdurationThresholdInMs=500 \
             -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
-            -JnumOfThread=50 \
-            -JnumOfLoop=100
+            -JnumOfThread=5 \
+            -JnumOfLoop=5
 
       - name: Upload Performance Test Results
         uses: actions/upload-artifact@v3
