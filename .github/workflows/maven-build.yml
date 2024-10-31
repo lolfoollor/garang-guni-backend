@@ -176,19 +176,21 @@ jobs:
         with:
           name: performance-test-${{ github.run_id }}
 
+      - name: Create Report Directory
+        run: mkdir -p report
+    
+      - name: Move Load Report to Report Directory
+        run: mv load-report report/
+    
+      - name: Move Performance Report to Report Directory
+        run: mv performance-report report/
+
       - name: Deploy JMeter Load Test Reports to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./load-report
-          publish_branch: gh-pages-load
-
-      - name: Deploy JMeter Performance Test Reports to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./performance-report
-          publish_branch: gh-pages-performance
+          publish_dir: ./report
+          publish_branch: gh-pages
 
       - name: Check JMeter Load Test Results if it exceed 5%
         run: ./check_failure_rate.sh ./test_load_results.jtl 5
