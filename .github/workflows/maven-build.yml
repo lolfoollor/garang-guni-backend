@@ -69,6 +69,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-run
 
+    env:
+        SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+        SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+        SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
+        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        CONNECTION_TO_DATABASE_HOST_PORT: ${{ secrets.CONNECTION_TO_DATABASE_HOST_PORT }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -76,17 +83,6 @@ jobs:
       - name: Build and run Docker Compose
         run: docker compose -f docker-compose.test.yml up -d --build
 
-      - name: Wait for Spring Boot application to start
-        run: |
-          echo "Waiting for Spring Boot application to start..."
-          sleep 60
-
-      - name: Get Active Dockers
-        run: docker ps
-
-      - name: Get Docker Logs
-        run: docker logs spring_boot_app
-    
       - name: Run Jmeter Load Test
         run: |
           docker exec spring_boot_app \
@@ -114,6 +110,13 @@ jobs:
   jmeter-performance-test:
     runs-on: ubuntu-latest
     needs: jmeter-load-test
+
+    env:
+        SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+        SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+        SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
+        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        CONNECTION_TO_DATABASE_HOST_PORT: ${{ secrets.CONNECTION_TO_DATABASE_HOST_PORT }}
 
     steps:
       - name: Checkout repository
