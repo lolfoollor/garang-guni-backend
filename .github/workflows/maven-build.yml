@@ -75,9 +75,6 @@ jobs:
 
       - name: Build and run Docker Compose
         run: docker compose -f docker-compose.test.yml up -d --build
-
-      - name: Create Result Folder
-        run: docker exec spring_boot_app mkdir -p ./results
     
       - name: Run Jmeter Load Test
         run: |
@@ -92,9 +89,9 @@ jobs:
             -JimageDir="./sctp/garang-guni-backend/src/main/resources/static/test-photos" \
             -JnumOfThread=20 \
             -JnumOfLoop=20
-
-      - name: List Directory Structure Inside Container
-        run: docker exec spring_boot_app ls -R /app 
+        
+      - name: Copy Results from Container
+        run: docker cp spring_boot_app:/app/results ./results
 
       - name: Upload Load Test Results
         uses: actions/upload-artifact@v3
@@ -119,9 +116,6 @@ jobs:
       - name: Build and run Docker Compose
         run: docker compose -f docker-compose.test.yml up -d --build
     
-      - name: Create Result Folder
-        run: docker exec spring_boot_app mkdir -p ./results
-    
       - name: Run Jmeter Performance Test
         run: |
             docker exec spring_boot_app \
@@ -136,8 +130,8 @@ jobs:
             -JnumOfThread=10 \
             -JnumOfLoop=10
         
-      - name: List Directory Structure Inside Container
-        run: docker exec spring_boot_app ls -R /app 
+      - name: Copy Results from Container
+        run: docker cp spring_boot_app:/app/results ./results
 
       - name: Upload Performance Test Results
         uses: actions/upload-artifact@v3
