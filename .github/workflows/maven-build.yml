@@ -3,7 +3,7 @@ name: Java CI
 on: [push, pull_request]
 
 permissions:
-  contents: read
+  contents: write
   security-events: write
 
 jobs:
