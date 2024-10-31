@@ -95,17 +95,11 @@ jobs:
       - name: Copy Results from Container
         run: docker cp spring_boot_app:/app/results ./results
 
-      - name: Upload Load Test Results
+      - name: Upload JMeter Test Result, Logs and reports
         uses: actions/upload-artifact@v3
         with:
-          name: load-test-results-${{ github.run_id }}
-          path: ./results/test_load_results.jtl
-      
-      - name: Upload JMeter Logs
-        uses: actions/upload-artifact@v3
-        with:
-          name: load-test-logs-${{ github.run_id }}
-          path: ./results/jmeter_load.log
+          name: load-test-${{ github.run_id }}
+          path: ./results
 
   jmeter-performance-test:
     runs-on: ubuntu-latest
@@ -135,33 +129,12 @@ jobs:
             -JnumOfThread=10 \
             -JnumOfLoop=10 \
             -e -o ./results/report
-    
-      - name: Run Jmeter Performance Test
-        run: |
-            docker exec spring_boot_app \
-            jmeter -n \
-            -t ./booking_performance_test_plan.jmx \
-            -l ./results/test_performance_results2.jtl \
-            -j ./results/jmeter_performance2.log \
-            -JtargetedServerName=localhost \
-            -JtargetedServerPort=8080 \
-            -JdurationThresholdInMs=500 \
-            -JimageDir="./src/main/resources/static/test-photos" \
-            -JnumOfThread=10 \
-            -JnumOfLoop=10 \
-            -e -o ./results/report2 
         
       - name: Copy Results from Container
         run: docker cp spring_boot_app:/app/results ./results
 
-      - name: Upload Performance Test Results
+      - name: Upload JMeter Test Result, Logs and reports
         uses: actions/upload-artifact@v3
         with:
-          name: performance-test-results-${{ github.run_id }}
-          path: ./results/test_performance_results.jtl
-        
-      - name: Upload JMeter Logs
-        uses: actions/upload-artifact@v3
-        with:
-          name: performance-test-logs-${{ github.run_id }}
-          path: ./results/jmeter_performance.log
+          name: performance-test-${{ github.run_id }}
+          path: ./results
