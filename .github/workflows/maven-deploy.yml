@@ -45,19 +45,13 @@ jobs:
     needs: docker-hub-publish
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Remove Unwanted Dockerfiles
-        run: rm -f Dockerfile Dockerfile.test
+      - name: Pull the latest Springboot from Docker Hub
+        run: docker pull lolfoollor/garang-guni-backend:${{ github.sha }}
 
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
           echo 'PATH="$HOME/.heroku/bin:$PATH"' >> $GITHUB_ENV
-
-      - name: Pull the latest Springboot from Docker Hub
-        run: docker pull lolfoollor/garang-guni-backend:${{ github.sha }}
 
       - name: Heroku Container Push
         run: |
