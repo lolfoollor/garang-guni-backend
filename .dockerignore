@@ -7,8 +7,6 @@ logs/
 /logs
 /postgres-data
 snyk-results.json
-jmeter.log
-test_results.jtl
 
 ### STS ###
 .apt_generated

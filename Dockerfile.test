@@ -1,0 +1,20 @@
+FROM eclipse-temurin:17-jdk-jammy
+WORKDIR /app
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+COPY src ./src
+COPY config ./config
+COPY lombok.config ./
+COPY booking_load_test_plan.jmx ./
+COPY booking_performance_test_plan.jmx ./
+COPY check_failure_rate.sh ./
+RUN chmod 774 ./mvnw && ./mvnw clean install -DskipTests
+# Download and Install Jmeter
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+RUN curl -L -o /tmp/apache-jmeter.tgz https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz \
+    && tar -xzf /tmp/apache-jmeter.tgz -C /opt/ \
+    && rm /tmp/apache-jmeter.tgz \
+    && ln -s /opt/apache-jmeter-5.6.3/bin/jmeter /usr/local/bin/jmeter   
+CMD ["./mvnw", "spring-boot:run"]
