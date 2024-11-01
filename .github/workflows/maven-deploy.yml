@@ -46,6 +46,13 @@ jobs:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Delete Test Docker Files
+        run: |
+          rm -f dockerfile.test docker-compose.test
+
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
@@ -57,5 +64,5 @@ jobs:
       - name: Heroku Container Push
         run: |
           heroku stack:set container -a ${{ secrets.HEROKU_APP_NAME }}
-          heroku container:push -a ${{ secrets.HEROKU_APP_NAME }}
-          heroku container:release -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku container:push web -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku container:release web -a ${{ secrets.HEROKU_APP_NAME }}
