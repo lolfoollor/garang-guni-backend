@@ -56,7 +56,6 @@ jobs:
       - name: Heroku Container Push
         run: |
           docker login --username=_ --password=${{ secrets.HEROKU_API_KEY }} registry.heroku.com
-          heroku container:login
           heroku stack:set container -a ${{ secrets.HEROKU_APP_NAME }} 
           heroku container:push web -a ${{ secrets.HEROKU_APP_NAME }} 
           heroku container:release web -a ${{ secrets.HEROKU_APP_NAME }} 
