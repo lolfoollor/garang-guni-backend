@@ -43,6 +43,8 @@ jobs:
   deploy-to-heroku:
     runs-on: ubuntu-latest
     needs: docker-hub-publish
+    env:
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
     steps:
       - name: Pull the latest Springboot from Docker Hub
@@ -54,7 +56,7 @@ jobs:
           heroku --version
 
       - name: Heroku CLI Login
-        run: echo "${{ secrets.HEROKU_API_KEY }}" | heroku auth:token
+        run: heroku container:login
     
       - name: Heroku Container Push
         run: |
