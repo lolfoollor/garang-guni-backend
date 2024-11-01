@@ -45,16 +45,17 @@ jobs:
     needs: docker-hub-publish
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          echo 'PATH="$HOME/.heroku/bin:$PATH"' >> $GITHUB_ENV
+
       - name: Pull the latest Springboot from Docker Hub
         run: docker pull lolfoollor/garang-guni-backend:${{ github.sha }}
-        
-      - name: Deploy to heroku    
-        uses: akhileshns/heroku-deploy@v3.13.15
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{secrets.HEROKU_APP_NAME}} 
-          heroku_email: ${{secrets.HEROKU_LOGIN_EMAIL}}
-          usedocker: true
+
+      - name: Heroku Container Push
+        run: |
+          heroku container:login
+          heroku stack:set container -a ${{ secrets.HEROKU_APP_NAME }} 
+          heroku container:push web -a ${{ secrets.HEROKU_APP_NAME }} 
+          heroku container:release web -a ${{ secrets.HEROKU_APP_NAME }} 
