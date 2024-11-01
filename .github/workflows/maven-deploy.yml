@@ -53,9 +53,11 @@ jobs:
           curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
           heroku --version
 
+      - name: Heroku CLI Login
+        run: echo "${{ secrets.HEROKU_API_KEY }}" | heroku auth:token
+    
       - name: Heroku Container Push
         run: |
-          docker login --username=_ --password=${{ secrets.HEROKU_API_KEY }} registry.heroku.com
-          heroku stack:set container -a ${{ secrets.HEROKU_APP_NAME }} 
-          heroku container:push web -a ${{ secrets.HEROKU_APP_NAME }} 
-          heroku container:release web -a ${{ secrets.HEROKU_APP_NAME }} 
+          heroku stack:set container -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku container:push web -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku container:release web -a ${{ secrets.HEROKU_APP_NAME }}
