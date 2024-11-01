@@ -45,6 +45,12 @@ jobs:
     needs: docker-hub-publish
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Remove Unwanted Dockerfiles
+        run: rm -f Dockerfile Dockerfile.test
+
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
