@@ -23,7 +23,6 @@ jobs:
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       DB_HOST: ${{ secrets.DB_HOST_PROD }}
       DB_PORT: ${{ secrets.DB_PORT_PROD }}
-      IMAGE_TAG: ${{ github.sha }}
 
     steps:
       - name: Checkout repository
@@ -35,11 +34,12 @@ jobs:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker Compose Images
-        run: docker compose -f docker-compose.yml build
+      - name: Build Docker Images
+        run: docker build -t lolfoollor/garang-guni-backend:${{ github.sha }} .
 
       - name: Push Docker Images to Docker Hub
-        run: docker compose -f docker-compose.yml push
+        run: docker push lolfoollor/garang-guni-backend:${{ github.sha }}
+
   deploy-to-heroku:
     runs-on: ubuntu-latest
     env:
@@ -50,8 +50,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Delete Test Docker Files
-        run: |
-          rm -f dockerfile.test docker-compose.test
+        run: rm -f dockerfile.test docker-compose.test
 
       - name: Install Heroku CLI
         run: |

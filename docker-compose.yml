@@ -13,7 +13,6 @@ services:
     container_name: spring_boot_app  
     build:
       dockerfile: ./Dockerfile
-    image: lolfoollor/garang-guni-backend:${IMAGE_TAG}
     depends_on:
       - postgres
     dns:
