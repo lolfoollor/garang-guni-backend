@@ -28,7 +28,7 @@
           </elementProp>
           <elementProp name="IMAGE_DIR" elementType="Argument">
             <stringProp name="Argument.name">IMAGE_DIR</stringProp>
-            <stringProp name="Argument.value">${__P(imageDir, ./sctp/garang-guni-backend/src/main/resources/static/test-photos)}</stringProp>
+            <stringProp name="Argument.value">${__P(imageDir, ./src/main/resources/static/test-photos)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="NUM_OF_THREAD" elementType="Argument">

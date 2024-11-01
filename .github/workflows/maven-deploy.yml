@@ -1,0 +1,67 @@
+name: Java CD
+
+on:
+  pull_request:
+    branches:
+      - main
+      - release
+  workflow_run:
+    workflows: ["Java CI"]
+    types:
+      - completed
+
+jobs:
+  docker-hub-publish:
+    runs-on: ubuntu-latest  
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    env:
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME_PROD }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD_PROD }}
+      SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB_PROD }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      DB_HOST: ${{ secrets.DB_HOST_PROD }}
+      DB_PORT: ${{ secrets.DB_PORT_PROD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_LOGIN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Images
+        run: docker build -t lolfoollor/garang-guni-backend:${{ github.sha }} .
+
+      - name: Push Docker Images to Docker Hub
+        run: docker push lolfoollor/garang-guni-backend:${{ github.sha }}
+
+  deploy-to-heroku:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    env:
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Delete Test Docker Files
+        run: rm -f dockerfile.test docker-compose.test
+
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+          heroku --version
+
+      - name: Heroku CLI Login
+        run: heroku container:login
+    
+      - name: Heroku Container Push
+        run: |
+          heroku stack:set container -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku container:push web -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku container:release web -a ${{ secrets.HEROKU_APP_NAME }}
