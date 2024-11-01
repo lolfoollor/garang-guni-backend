@@ -1,4 +1,4 @@
-name: Java CD
+name: Java-CD
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
       - release
   workflow_run:
-    workflows: ["Java CI"]
+    workflows: ["Java-CI"]
     types:
       - completed
 
