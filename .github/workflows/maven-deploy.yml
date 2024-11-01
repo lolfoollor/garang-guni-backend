@@ -16,6 +16,15 @@ jobs:
   docker-hub-publish:
     runs-on: ubuntu-latest  
 
+    env:
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME_PROD }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD_PROD }}
+      SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB_PROD }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      DB_HOST: ${{ secrets.DB_HOST_PROD }}
+      DB_PORT: ${{ secrets.DB_PORT_PROD }}
+      IMAGE_TAG: ${{ github.sha }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
