@@ -50,6 +50,9 @@ jobs:
       - name: Pull the latest Springboot from Docker Hub
         run: docker pull lolfoollor/garang-guni-backend:${{ github.sha }}
 
+      - name: Tag the Docker image for Heroku
+        run: docker tag lolfoollor/garang-guni-backend:${{ github.sha }} registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
+
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
