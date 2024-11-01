@@ -54,9 +54,8 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Default Http Server and Port">
-          <stringProp name="HTTPSampler.domain">${targetedServerName}</stringProp>
-          <stringProp name="HTTPSampler.port">${port}</stringProp>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Default Http Server and Port" enabled="false">
+          <stringProp name="HTTPSampler.domain">garang-guni-backend-2dac5572fff7.herokuapp.com</stringProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -73,6 +72,8 @@
         </HeaderManager>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetAuthToken">
+          <stringProp name="HTTPSampler.domain">garang-guni-backend-2dac5572fff7.herokuapp.com</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.path">/auth/login</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -112,6 +113,8 @@ if (token) {
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Location Data for Location ID">
+          <stringProp name="HTTPSampler.domain">garang-guni-backend-2dac5572fff7.herokuapp.com</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.path">/locations</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -234,7 +237,7 @@ if (locationId) {
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Load Testing">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Load Testing" enabled="false">
         <stringProp name="ThreadGroup.num_threads">${NUM_OF_THREAD}</stringProp>
         <intProp name="ThreadGroup.ramp_time">1</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>

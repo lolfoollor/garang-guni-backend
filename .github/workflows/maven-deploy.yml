@@ -1,12 +1,10 @@
 name: Java CD
 
 on:
-  push:
   pull_request:
     branches:
       - main
       - release
-      - feat/add-cd
   workflow_run:
     workflows: ["Java CI"]
     types:
