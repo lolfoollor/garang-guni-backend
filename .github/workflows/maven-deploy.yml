@@ -50,8 +50,8 @@ jobs:
 
       - name: Install Heroku CLI
         run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
-          echo 'PATH="$HOME/.heroku/bin:$PATH"' >> $GITHUB_ENV
+          curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+          heroku --version
 
       - name: Heroku Container Push
         run: |
