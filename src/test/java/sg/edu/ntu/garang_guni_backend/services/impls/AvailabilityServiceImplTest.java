@@ -1,9 +1,7 @@
 package sg.edu.ntu.garang_guni_backend.services.impls;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-// import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,14 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import sg.edu.ntu.garang_guni_backend.entities.Availability;
-import sg.edu.ntu.garang_guni_backend.entities.AvailabilityRequest;
 import sg.edu.ntu.garang_guni_backend.entities.Location;
 import sg.edu.ntu.garang_guni_backend.entities.ScrapDealer;
-import sg.edu.ntu.garang_guni_backend.exceptions.InvalidDateException;
-// import sg.edu.ntu.garang_guni_backend.exceptions.UnauthorizedAccessException;
 import sg.edu.ntu.garang_guni_backend.repositories.AvailabilityRepository;
 import sg.edu.ntu.garang_guni_backend.repositories.ScrapDealerRepository;
-// import sg.edu.ntu.garang_guni_backend.services.impls.AvailabilityServiceImpl;
 import sg.edu.ntu.garang_guni_backend.services.LocationService;
 
 class AvailabilityServiceImplTest {
@@ -44,12 +38,9 @@ class AvailabilityServiceImplTest {
     private ScrapDealerRepository scrapDealerRepository;
 
     private Availability availability;
-    private AvailabilityRequest availabilityRequest;
     private ScrapDealer scrapDealer;
     private Location mockLocation;
     private static final LocalDate AVAILABLE_DATE = LocalDate.now().plusDays(10);
-    private static final LocalDate INVALID_DATE = LocalDate.now().minusDays(4);
-
 
     @BeforeEach
     void setUp() {
@@ -63,25 +54,10 @@ class AvailabilityServiceImplTest {
         mockLocation.setLatitude(BigDecimal.valueOf(1.281285));
         mockLocation.setLongitude(BigDecimal.valueOf(1.281285));
 
-        availabilityRequest = AvailabilityRequest.builder()
-                                .availableDate(INVALID_DATE)
-                                .location(mockLocation)
-                                .build();
-
         availability = new Availability();
         availability.setAvailableDate(AVAILABLE_DATE);
         availability.setLocation(mockLocation);
     }
-
-    // @Test
-    // @DisplayName("Test Creating Availability with Past Date")
-    // void testCreateAvailabilityInvalidDate() {
-    //     when(locationService.createLocation(any(Location.class)))
-    //             .thenReturn(mockLocation);
-
-    //     assertThrows(InvalidDateException.class, () -> 
-    //             availabilityService.createAvailability(availabilityRequest));
-    // }
 
     @Test
     @DisplayName("Test Updating Availability Date Successfully")
@@ -91,8 +67,8 @@ class AvailabilityServiceImplTest {
         when(availabilityRepository.save(any(Availability.class)))
                 .thenReturn(availability);
 
-        Availability updatedAvailability = 
-                availabilityService.updateAvailability(UUID.randomUUID(), availability);
+        Availability updatedAvailability = availabilityService
+                .updateAvailability(UUID.randomUUID(), availability);
 
         assertEquals(AVAILABLE_DATE, updatedAvailability.getAvailableDate());
     }
@@ -108,13 +84,4 @@ class AvailabilityServiceImplTest {
                 .deleteById(any(UUID.class));
     }
 
-    // @Test
-    // @DisplayName("Test Unauthorized Access when Deleting Availability")
-    // void testUnauthorizedAccessForDelete() {
-    //     UUID unauthorizedUserId = UUID.randomUUID();
-    //     when(availabilityRepository.findById(anyLong())).thenReturn(Optional.of(availability));
-
-    //     assertThrows(UnauthorizedAccessException.class, () -> 
-    //         availabilityService.deleteAvailability(1L, unauthorizedUserId));
-    // }
 }

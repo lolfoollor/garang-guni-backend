@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -16,6 +17,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +31,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "my_user")
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
 
     @Id
@@ -37,29 +39,27 @@ public class User {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "first_name")
-    @NotBlank(message = "First name cannot be blank")
-    private String firstName;
-
-    @Column(name = "last_name")
-    @NotBlank(message = "Last name cannot be blank")
-    private String lastName;
+    @Column(name = "username")
+    @NotBlank(message = "username cannot be blank")
+    private String username;
 
     @Column(name = "email")
+    @NotBlank(message = "Email cannot be blank")
     @Email(message = "Email format must be valid")
     private String email;
 
     @Column(name = "password")
     @NotBlank(message = "Password cannot be blank")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$", 
-        message = "Password must be at least 8 characters long and contain an uppercase letter,"
-        + " a lowercase letter, a number, and a special character.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$", message = "Password must be at least 8 characters long and contain an uppercase letter,"
+            + " a lowercase letter, a number, and a special character.")
     private String password;
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
+    private Set<UserRole> roles;
 
-    private UserRole role;
+    @Column(name = "enabled")
+    private boolean isEnabled;
 
     @Column(name = "contact_no")
     @Digits(fraction = 0, integer = 8, message = "Contact Number must be 8 digits")
