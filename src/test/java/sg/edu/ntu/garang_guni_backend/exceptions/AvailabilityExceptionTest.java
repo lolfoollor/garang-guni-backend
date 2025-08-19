@@ -1,7 +1,6 @@
 package sg.edu.ntu.garang_guni_backend.exceptions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,12 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 class AvailabilityExceptionTest {
 
     @InjectMocks
     private GlobalExceptionHandler globalExceptionHandler;
+
+    private static final String REQUEST_URI = "/availability/123";
 
     @BeforeEach
     void setUp() {
@@ -24,51 +26,65 @@ class AvailabilityExceptionTest {
     @Test
     @DisplayName("Test Handling Availability Not Found Exception")
     void testHandleAvailabilityNotFoundException() {
+        String errorMsg = "Availability not found";
         AvailabilityNotFoundException exception = new AvailabilityNotFoundException(
-            "Availability not found");
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler
-            .handleResourceException(exception);
+                errorMsg);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI(REQUEST_URI);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Availability not found", response.getBody().getMessage());
+        ProblemDetail response = globalExceptionHandler
+                .handleResourceException(exception, request);
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertEquals(errorMsg, response.getDetail());
+        assertEquals(REQUEST_URI, response.getInstance().toString());
     }
 
     @Test
     @DisplayName("Test Handling Invalid Date Exception")
     void testHandleInvalidDateException() {
-        InvalidDateException exception = new InvalidDateException("Invalid date provided");
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler
-            .handleInvalidDate(exception);
+        String errorMsg = "Invalid date provided";
+        InvalidDateException exception = new InvalidDateException(errorMsg);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI(REQUEST_URI);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Invalid date provided", response.getBody().getMessage());
+        ProblemDetail response = globalExceptionHandler
+                .handleInvalidDate(exception, request);
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+        assertEquals(errorMsg, response.getDetail());
+        assertEquals(REQUEST_URI, response.getInstance().toString());
     }
 
     @Test
     @DisplayName("Test Handling Unauthorized Access Exception for Availability")
     void testHandleUnauthorizedAccessException() {
+        String errorMsg = "Unauthorized access";
         UnauthorizedAccessException exception = new UnauthorizedAccessException(
-            "Unauthorized access");
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler
-            .handleUnauthorizedAccess(exception);
+                errorMsg);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI(REQUEST_URI);
 
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Unauthorized access", response.getBody().getMessage());
+        ProblemDetail response = globalExceptionHandler
+                .handleUnauthorizedAccess(exception, request);
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatus());
+        assertEquals(REQUEST_URI, response.getInstance().toString());
     }
 
     @Test
     @DisplayName("Test Handling Generic Exception for Availability")
     void testHandleGenericException() {
-        Exception exception = new Exception("Unexpected error occurred");
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler
-            .handleException(exception);
+        String errorMsg = "An error occurred. Please contact support.";
+        Exception exception = new Exception(errorMsg);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI(REQUEST_URI);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("An error occurred. Please contact support.",
-                response.getBody().getMessage());
+        ProblemDetail response = globalExceptionHandler
+                .handleException(exception, request);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
+        assertEquals(errorMsg, response.getDetail());
+        assertEquals(REQUEST_URI, response.getInstance().toString());
     }
 }

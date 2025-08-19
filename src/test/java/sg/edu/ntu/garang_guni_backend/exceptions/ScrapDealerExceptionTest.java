@@ -1,7 +1,6 @@
 package sg.edu.ntu.garang_guni_backend.exceptions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
+import org.springframework.mock.web.MockHttpServletRequest;
 import sg.edu.ntu.garang_guni_backend.services.ScrapDealerService;
 
 class ScrapDealerExceptionTest {
@@ -21,6 +21,8 @@ class ScrapDealerExceptionTest {
     @Mock
     private ScrapDealerService scrapDealerService;
 
+    private static final String REQUEST_URI = "/location/123";
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -29,39 +31,49 @@ class ScrapDealerExceptionTest {
     @Test
     @DisplayName("Test Handling ScrapDealer Not Found Exception")
     void testHandleScrapDealerNotFoundException() {
+        String errorMsg = "Scrap dealer not found";
         ScrapDealerNotFoundException exception = new ScrapDealerNotFoundException(
-            "Scrap dealer not found");
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler
-            .handleResourceException(exception);
+                errorMsg);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI(REQUEST_URI);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Scrap dealer not found", response.getBody().getMessage());
+        ProblemDetail response = globalExceptionHandler
+                .handleResourceException(exception, request);
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertEquals(errorMsg, response.getDetail());
+        assertEquals(REQUEST_URI, response.getInstance().toString());
     }
 
     @Test
     @DisplayName("Test Handling Unauthorized Access Exception for ScrapDealer")
     void testHandleUnauthorizedAccessException() {
+        String errorMsg = "Unauthorized access";
         UnauthorizedAccessException exception = new UnauthorizedAccessException(
-            "Unauthorized access");
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler
-            .handleUnauthorizedAccess(exception);
+                errorMsg);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI(REQUEST_URI);
 
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Unauthorized access", response.getBody().getMessage());
+        ProblemDetail response = globalExceptionHandler
+                .handleUnauthorizedAccess(exception, request);
+
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatus());
+        assertEquals(REQUEST_URI, response.getInstance().toString());
     }
 
     @Test
     @DisplayName("Test Handling Generic Exception for ScrapDealer")
     void testHandleGenericException() {
-        Exception exception = new Exception("Unexpected error occurred");
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler
-            .handleException(exception);
+        String errorMsg = "Unexpected error occurred";
+        Exception exception = new Exception(errorMsg);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI(REQUEST_URI);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("An error occurred. Please contact support.",
-                response.getBody().getMessage());
+        ProblemDetail response = globalExceptionHandler
+                .handleException(exception, request);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
+        assertEquals(errorMsg, response.getDetail());
+        assertEquals(REQUEST_URI, response.getInstance().toString());
     }
 }

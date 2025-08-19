@@ -1,7 +1,7 @@
 package sg.edu.ntu.garang_guni_backend.exceptions;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -46,22 +46,46 @@ public class GlobalExceptionHandler {
         LocationNotFoundException.class,
         BookingNotFoundException.class
     })
-    public ResponseEntity<ErrorResponse> handleResourceException(Exception ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    public ProblemDetail handleResourceException(
+            Exception ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withTitle("Resource not found")
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.NOT_FOUND)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 
     // @formatter:on
     @ExceptionHandler(InvalidDateException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidDate(InvalidDateException ex) {
-        ErrorResponse error = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    public ProblemDetail handleInvalidDate(
+            InvalidDateException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.BAD_REQUEST)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 
     @ExceptionHandler(UnauthorizedAccessException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorizedAccess(UnauthorizedAccessException ex) {
-        ErrorResponse error = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    public ProblemDetail handleUnauthorizedAccess(
+            UnauthorizedAccessException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withErrorType(ErrorType.FORBIDDEN)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 
     /**
@@ -75,72 +99,140 @@ public class GlobalExceptionHandler {
      *         status
      */
     @ExceptionHandler(UserExistsException.class)
-    public ResponseEntity<ErrorResponse> handleUserExistsException(UserExistsException exception) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                exception.getMessage(), LocalDateTime.now());
+    public ProblemDetail handleUserExistsException(
+            UserExistsException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.RESOURCE_ALREADY_EXISTS)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 
     @ExceptionHandler(ContactNotProcessingException.class)
-    public ResponseEntity<ErrorResponse> handleContactNotProcessingException(
-            ContactNotProcessingException ex) {
-        logger.error("Error: ", ex);
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ProblemDetail handleContactNotProcessingException(
+            ContactNotProcessingException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.UNKNOWN_SERVER_ERROR)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 
     @ExceptionHandler(ImageUtilsException.class)
-    public ResponseEntity<ErrorResponse> handleImageCompressionException(ImageUtilsException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
-        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
+    public ProblemDetail handleImageCompressionException(
+            ImageUtilsException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode());
+
+        ErrorType errorType = switch (status) {
+            case BAD_REQUEST -> ErrorType.BAD_REQUEST;
+            case UNSUPPORTED_MEDIA_TYPE -> ErrorType.UNSUPPORTED_MEDIA_TYPE;
+            case PAYLOAD_TOO_LARGE -> ErrorType.PAYLOAD_TOO_LARGE;
+            default -> ErrorType.UNKNOWN_SERVER_ERROR;
+        };
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withDetail(ex.getMessage())
+                .withErrorType(errorType)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-        List<ObjectError> validationErrors = ex.getBindingResult().getAllErrors();
-        StringBuilder sb = new StringBuilder();
-        for (ObjectError error : validationErrors) {
-            sb.append(error.getDefaultMessage());
-            sb.append(". ");
-        }
-        ErrorResponse errorResponse = new ErrorResponse(sb.toString(), LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    public ProblemDetail handleValidationExceptions(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        List<String> errors = ex.getBindingResult().getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage)
+                .toList();
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withDetail("One or more validation errors occurred")
+                .withErrorType(ErrorType.REQUEST_VALIDATION_FAILED)
+                .withInstance(request.getRequestURI())
+                .withProperty("errors", errors)
+                .build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
-            DataIntegrityViolationException ex) {
+    public ProblemDetail handleDataIntegrityViolation(
+            DataIntegrityViolationException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+
         String errorMsg = ex.getMessage();
         String re = "Detail: ([^]]+)";
         Pattern pattern = Pattern.compile(re);
         Matcher matcher = pattern.matcher(errorMsg);
-        String detailMsg = "";
-        if (matcher.find()) {
-            detailMsg = matcher.group(1).trim();
-        } else {
-            detailMsg = "Unknown unique constraint has been violated";
-        }
+        String detailMsg = matcher.find()
+                ? matcher.group(1).trim()
+                : "Unknown data integrity constraint has been violated";
 
-        ErrorResponse errorMessage = new ErrorResponse(
-                "A data integrity error occurred: " + detailMsg, LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withTitle("Data integrity violation")
+                .withDetail(detailMsg)
+                .withErrorType(ErrorType.DB_CONSTRAINT_VIOLATION)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                "Malformed JSON request", LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    public ProblemDetail handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withTitle("Malformed JSON request")
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.BAD_REQUEST)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(ValidationException ex) {
+    public ProblemDetail handleValidationException(
+            ValidationException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         logger.warn("Validation failed: {}", ex.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withTitle("Validation failed")
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.REQUEST_VALIDATION_FAILED)
+                .withInstance(request.getRequestURI())
+                .build();
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail handleBadCredentials(
+            BadCredentialsException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withTitle("Authentication failed")
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.UNAUTHORIZED)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 
     /**
@@ -154,23 +246,22 @@ public class GlobalExceptionHandler {
      *         status
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+    public ProblemDetail handleException(
+            Exception ex,
+            HttpServletRequest request) {
         logger.error(ex.getMessage(), ex);
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
-        if (ex instanceof BadCredentialsException) {
-            ErrorResponse errorResponse = new ErrorResponse(
-                    "The email or password is incorrect", LocalDateTime.now());
-            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        if (ex instanceof BadCredentialsException badCredentialsException) {
+            return handleBadCredentials(badCredentialsException, request);
         }
-        ErrorResponse errorResponse = new ErrorResponse(
-                "An error occurred. Please contact support.", LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-    }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                "Invalid username or password", LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withTitle("Internal server error")
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.UNKNOWN_SERVER_ERROR)
+                .withInstance(request.getRequestURI())
+                .build();
     }
 }

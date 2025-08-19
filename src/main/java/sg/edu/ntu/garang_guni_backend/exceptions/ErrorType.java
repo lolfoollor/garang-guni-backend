@@ -10,6 +10,7 @@ public enum ErrorType {
     UNAUTHORIZED(create("errors/unauthorized")),
     FORBIDDEN(create("errors/forbidden")),
     ACCOUNT_UNAVAILABLE(create("errors/account-unavailable")),
+    DB_CONSTRAINT_VIOLATION(create("errors/db-constraint-violation")),
     REQUEST_VALIDATION_FAILED(create("errors/request-validation-failed")),
     RESOURCE_ALREADY_EXISTS(create("errors/resource-already-exists")),
     EMAIL_VERIFICATION_REQUIRED(create("errors/email-verification-required")),
