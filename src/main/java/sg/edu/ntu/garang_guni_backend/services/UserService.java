@@ -4,7 +4,11 @@ import java.util.UUID;
 import sg.edu.ntu.garang_guni_backend.entities.User;
 
 public interface UserService {
-    User getUser(UUID id);
+    User createUser(User user);
+
+    User getUserById(UUID id);
+
+    User getUserByEmail(String email);
 
     User updateUser(UUID id, User user);
 }

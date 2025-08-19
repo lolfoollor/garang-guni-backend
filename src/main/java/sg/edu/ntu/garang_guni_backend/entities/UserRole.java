@@ -5,68 +5,70 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * The UserRole enum represents different roles a user can have in the system.
- * This enum has three constants: SCRAP_DEALER, CUSTOMER, and ADMIN,
- * each mapped to their corresponding string representations.
- *
- * <p>The enum provides custom JSON handling by annotating methods for serialization 
- * and deserialization.
+ * This enum has three
+ * constants: USER, BUYER, and ADMIN, each mapped to their corresponding string
+ * representations.
+ * The enum provides custom JSON handling by annotating methods for
+ * serialization and deserialization.
  */
 public enum UserRole {
     /**
-     * Represents the "Scrap Dealer" role in the system.
+     * Represents the "User" role in the system.
      */
-    SCRAP_DEALER("Scrap Dealer"),
+    USER("USER"),
 
     /**
-     * Represents the "Customer" role in the system.
+     * Represents the "Buyer" role in the system.
      */
-    CUSTOMER("Customer"),
+    BUYER("BUYER"),
 
     /**
      * Represents the "Admin" role in the system.
      */
-    ADMIN("Admin");
+    ADMIN("ADMIN");
 
-    private final String role;
-
+    private final String roleName;
 
     /**
      * Private constructor for the UserRole enum.
      *
-     * @param role the string representation of the user role
+     * @param roleName the string representation of the UserRole.
      */
-    private UserRole(String role) {
-        this.role = role;
+    private UserRole(String roleName) {
+        this.roleName = roleName;
     }
 
     /**
-     * Returns the string representation of the user role for JSON serialization.
+     * Returns the string representation of the UserRole for JSON serialization.
      *
-     * @return the role as a string (e.g., "Scrap Dealer", "Customer", "Admin")
+     * @return the UserRole as a string (e.g., "User", "Buyer", "Admin")
      */
     @JsonValue
-    public String getRole() {
-        return role;
+    public String getRoleName() {
+        return roleName;
     }
 
     /**
      * Parses a string value into the corresponding {@code UserRole} enum constant.
-     * This method is case-insensitive and is used for custom deserialization.
+     * This method is
+     * case-insensitive and is used for custom deserialization.
+     * For example, a string value of "Buyer" or "buyer" would return {@code BUYER}.
      *
-     * <p>For example, a string value of "Customer" or "customer" would return {@code CUSTOMER}.
-     *
-     * @param role the string representation of the role (e.g., "Scrap Dealer", "Customer", "Admin")
+     * @param roleName the string representation of the UserRole (e.g., "User",
+     *                 "Buyer","Admin")
      * @return the corresponding {@code UserRole} enum constant
-     * @throws IllegalArgumentException if the provided role value does not match any enum constant
+     * @throws IllegalArgumentException if the provided roleName value does not
+     *                                  match any enum
+     *                                  constant
      */
     @JsonCreator
-    public static UserRole parseUserRole(String role) {
-        for (UserRole userRole : UserRole.values()) {
-            if (userRole.role.equalsIgnoreCase(role)) {
-                return userRole;
+    public static UserRole parseUserRole(String roleName) {
+        for (UserRole role : UserRole.values()) {
+            if (role.getRoleName().equalsIgnoreCase(roleName)) {
+                return role;
             }
         }
 
-        throw new IllegalArgumentException("Invalid user role value: " + role);
+        throw new IllegalArgumentException("Invalid user role value: " + roleName);
     }
 }

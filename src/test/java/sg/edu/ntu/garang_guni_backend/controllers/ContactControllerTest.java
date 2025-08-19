@@ -5,12 +5,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -18,39 +15,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import sg.edu.ntu.garang_guni_backend.entities.Contact;
-import sg.edu.ntu.garang_guni_backend.entities.User;
-import sg.edu.ntu.garang_guni_backend.security.JwtTokenUtil;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class ContactControllerTest {
-
-    @Value("${jwt.secret.key}")
-    private String secretKey;
-    
-    private String token;
-    private static final long TEST_SESSION_PERIOD = 60000;
-    private static final String TOKEN_HEADER = "Authorization";
-    private static final String TOKEN_PREFIX = "Bearer ";
-
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @BeforeEach
-    void tokenSetup() {
-        User testUser = new User();
-        testUser.setEmail("test@example.com");
-        testUser.setId(UUID.randomUUID());
-        testUser.setFirstName("Test");
-        testUser.setLastName("User");
-        testUser.setPassword("F@k3P@ssw0rd");
-
-        JwtTokenUtil tokenUtil = new JwtTokenUtil(secretKey, TEST_SESSION_PERIOD);
-        token = tokenUtil.createToken(testUser);
-    }
 
     @DisplayName("Test for creating a valid contact form")
     @Test
@@ -66,19 +39,17 @@ class ContactControllerTest {
         String newContactAsJson = objectMapper.writeValueAsString(newContact);
 
         RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(newContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+                .contentType(MediaType.APPLICATION_JSON).content(newContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.firstName").value("Wang"))
-            .andExpect(jsonPath("$.lastName").value("Wong"))
-            .andExpect(jsonPath("$.email").value("wang@gmail.com"))
-            .andExpect(jsonPath("$.phoneNumber").value("+6598765432"))
-            .andExpect(jsonPath("$.subject").value("Inquiry"))
-            .andExpect(jsonPath("$.messageContent").value("This is a test message."));
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.firstName").value("Wang"))
+                .andExpect(jsonPath("$.lastName").value("Wong"))
+                .andExpect(jsonPath("$.email").value("wang@gmail.com"))
+                .andExpect(jsonPath("$.phoneNumber").value("+6598765432"))
+                .andExpect(jsonPath("$.subject").value("Inquiry"))
+                .andExpect(jsonPath("$.messageContent").value("This is a test message."));
     }
 
     @DisplayName("Test creating contact with empty First and Last Name")
@@ -94,13 +65,13 @@ class ContactControllerTest {
 
         String emptyNameContactAsJson = objectMapper.writeValueAsString(emptyNameContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(emptyNameContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(emptyNameContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest());
     }
 
     @DisplayName("Test creating valid contact with first name only")
@@ -116,15 +87,14 @@ class ContactControllerTest {
 
         String newContactAsJson = objectMapper.writeValueAsString(newContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(newContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON).content(newContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.firstName").value("Wang"))
-            .andExpect(jsonPath("$.lastName").value(""));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.firstName").value("Wang"))
+                .andExpect(jsonPath("$.lastName").value(""));
     }
 
     @DisplayName("Test creating contact with long firstName")
@@ -140,14 +110,14 @@ class ContactControllerTest {
 
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").exists());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @DisplayName("Test creating valid contact with last name only")
@@ -164,14 +134,12 @@ class ContactControllerTest {
         String newContactAsJson = objectMapper.writeValueAsString(newContact);
 
         RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(newContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+                .contentType(MediaType.APPLICATION_JSON).content(newContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.lastName").value("Wong"))
-            .andExpect(jsonPath("$.firstName").value(""));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.lastName").value("Wong"))
+                .andExpect(jsonPath("$.firstName").value(""));
     }
 
     @DisplayName("Test creating contact with too long lastName")
@@ -188,13 +156,11 @@ class ContactControllerTest {
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
 
         RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+                .contentType(MediaType.APPLICATION_JSON).content(invalidContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").exists());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @DisplayName("Test creating contact with empty phoneNumber and email")
@@ -210,14 +176,15 @@ class ContactControllerTest {
 
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(status().isBadRequest())
+                .andExpect(content()
+                        .contentType(MediaType.APPLICATION_JSON));
     }
 
     @DisplayName("Test creating contact with invalid phone number")
@@ -233,14 +200,15 @@ class ContactControllerTest {
 
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").exists());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .exists());
     }
 
     @DisplayName("Test creating contact with invalid email")
@@ -256,14 +224,14 @@ class ContactControllerTest {
 
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").exists());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @DisplayName("Test creating contact with empty subject")
@@ -274,20 +242,20 @@ class ContactControllerTest {
         invalidContact.setLastName("Wong");
         invalidContact.setEmail("wang@gmail.com");
         invalidContact.setPhoneNumber("+6592345678");
-        invalidContact.setSubject(""); 
+        invalidContact.setSubject("");
         invalidContact.setMessageContent("This is a test message.");
 
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.message").exists());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @DisplayName("Test creating contact with too long subject")
@@ -303,14 +271,14 @@ class ContactControllerTest {
 
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").exists()); 
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @DisplayName("Test creating contact with empty messageContent")
@@ -326,15 +294,15 @@ class ContactControllerTest {
 
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.message").exists());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @DisplayName("Test creating contact with very long message content")
@@ -347,21 +315,22 @@ class ContactControllerTest {
         invalidContact.setPhoneNumber("+6592345678");
         invalidContact.setSubject("Inquiry");
         invalidContact.setMessageContent("This is a very long test message "
-            + "that exceeds the 200 character limit. I also dont know what else should write "
-            + "to make it more then 200 character. Maybe i should just limit user to key in 100 "
-            + "character and that it. i think by now should mbe more than enough. lets see the "
-            + "test result.");
+                + "that exceeds the 200 character limit. I also dont know what"
+                + "else should write to make it more then 200 character. Maybe I"
+                + "should just limit user to key in 100 character and that it."
+                + "I think by now should mbe more than enough. lets see the "
+                + "test result.");
 
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").exists());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @DisplayName("Test creating contact with empty request body")
@@ -369,14 +338,14 @@ class ContactControllerTest {
     void emptyContactRequestTest() throws Exception {
         String emptyContactAsJson = "{}";
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(emptyContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(emptyContactAsJson);
 
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").exists());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @DisplayName("Test creating contact with XSS attack in message content")
@@ -388,17 +357,17 @@ class ContactControllerTest {
         invalidContact.setEmail("wang@gmail.com");
         invalidContact.setPhoneNumber("+6592345678");
         invalidContact.setSubject("Inquiry");
-    
+
         invalidContact.setMessageContent("<script>alert('XSS');</script>");
-    
+
         String invalidContactAsJson = objectMapper.writeValueAsString(invalidContact);
-    
-        RequestBuilder request = MockMvcRequestBuilders.post("/contacts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(invalidContactAsJson)
-            .header(TOKEN_HEADER, TOKEN_PREFIX + token);
-    
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/contacts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidContactAsJson);
+
         mockMvc.perform(request)
-            .andExpect(status().isBadRequest()); 
+                .andExpect(status().isBadRequest());
     }
 }

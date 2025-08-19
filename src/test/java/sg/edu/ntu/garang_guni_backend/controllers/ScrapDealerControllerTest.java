@@ -18,9 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import sg.edu.ntu.garang_guni_backend.entities.ScrapDealer;
 import sg.edu.ntu.garang_guni_backend.services.ScrapDealerService;
@@ -32,7 +32,7 @@ class ScrapDealerControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ScrapDealerService scrapDealerService;
 
     @Autowired
@@ -54,7 +54,7 @@ class ScrapDealerControllerTest {
 
     @Test
     @DisplayName("Test creating a valid ScrapDealer")
-    @WithMockUser(username = "uncle@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "uncle@gmail.com", roles = { "SCRAP_DEALER" })
     void testCreateScrapDealer() throws Exception {
         when(scrapDealerService.createDealer(any(ScrapDealer.class))).thenReturn(scrapDealer);
 
@@ -67,10 +67,10 @@ class ScrapDealerControllerTest {
                 .andExpect(jsonPath("$.email").value("uncle@gmail.com"))
                 .andExpect(jsonPath("$.phoneNumber").value("+6591234567"));
     }
-    
+
     @Test
     @DisplayName("Test creating ScrapDealer with missing first name")
-    @WithMockUser(username = "uncle@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "uncle@gmail.com", roles = { "SCRAP_DEALER" })
     void testCreateScrapDealer_MissingFirstName() throws Exception {
         scrapDealer.setFirstName("");
 
@@ -83,7 +83,7 @@ class ScrapDealerControllerTest {
 
     @Test
     @DisplayName("Test creating ScrapDealer with long first name")
-    @WithMockUser(username = "uncle@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "uncle@gmail.com", roles = { "SCRAP_DEALER" })
     void testCreateScrapDealer_LongFirstName() throws Exception {
         scrapDealer.setFirstName("ThisFirstNameIsWayTooLongAndInvalid");
 
@@ -92,14 +92,14 @@ class ScrapDealerControllerTest {
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(
-                    "First name should not exceed 20 characters. "));
+                        "First name should not exceed 20 characters. "));
     }
 
     @Test
     @DisplayName("Test creating ScrapDealer with missing last name")
-    @WithMockUser(username = "uncle@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "uncle@gmail.com", roles = { "SCRAP_DEALER" })
     void testCreateScrapDealer_MissingLastName() throws Exception {
-        scrapDealer.setLastName(""); 
+        scrapDealer.setLastName("");
 
         mockMvc.perform(post("/scrapdealers")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -110,7 +110,7 @@ class ScrapDealerControllerTest {
 
     @Test
     @DisplayName("Test creating ScrapDealer with long last name")
-    @WithMockUser(username = "uncle@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "uncle@gmail.com", roles = { "SCRAP_DEALER" })
     void testCreateScrapDealer_LongLastName() throws Exception {
         scrapDealer.setLastName("ThisLastNameIsWayTooLongAndInvalid");
 
@@ -119,12 +119,12 @@ class ScrapDealerControllerTest {
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(
-                    "Last name should not exceed 20 characters. "));
+                        "Last name should not exceed 20 characters. "));
     }
 
     @Test
     @DisplayName("Test creating ScrapDealer with invalid email")
-    @WithMockUser(username = "uncle@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "uncle@gmail.com", roles = { "SCRAP_DEALER" })
     void testCreateScrapDealer_InvalidEmail() throws Exception {
         scrapDealer.setEmail("invalid-email");
 
@@ -137,7 +137,7 @@ class ScrapDealerControllerTest {
 
     @Test
     @DisplayName("Test creating ScrapDealer with empty email")
-    @WithMockUser(username = "uncle@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "uncle@gmail.com", roles = { "SCRAP_DEALER" })
     void testCreateScrapDealer_EmptyEmail() throws Exception {
         scrapDealer.setEmail("");
 
@@ -150,7 +150,7 @@ class ScrapDealerControllerTest {
 
     @Test
     @DisplayName("Test creating ScrapDealer with missing phone number")
-    @WithMockUser(username = "uncle@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "uncle@gmail.com", roles = { "SCRAP_DEALER" })
     void testCreateScrapDealer_MissingPhoneNumber() throws Exception {
         scrapDealer.setPhoneNumber("");
 
@@ -163,7 +163,7 @@ class ScrapDealerControllerTest {
 
     @Test
     @DisplayName("Test creating ScrapDealer with invalid phone number")
-    @WithMockUser(username = "uncle@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "uncle@gmail.com", roles = { "SCRAP_DEALER" })
     void testCreateScrapDealer_InvalidPhoneNumber() throws Exception {
         scrapDealer.setPhoneNumber("123456");
 
@@ -172,13 +172,13 @@ class ScrapDealerControllerTest {
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(
-                    "Phone number must be in the format +65 "
-                    + "followed by 8 digits starting with 6, 8, or 9. "));
+                        "Phone number must be in the format +65 "
+                                + "followed by 8 digits starting with 6, 8, or 9. "));
     }
 
     @Test
     @DisplayName("Test retrieving all ScrapDealers")
-    @WithMockUser(username = "admin@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "admin@gmail.com", roles = { "SCRAP_DEALER" })
     void testGetAllScrapDealers() throws Exception {
         List<ScrapDealer> dealers = new ArrayList<>();
         dealers.add(scrapDealer);
@@ -196,7 +196,7 @@ class ScrapDealerControllerTest {
 
     @Test
     @DisplayName("Test retrieving ScrapDealer by ID")
-    @WithMockUser(username = "admin@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "admin@gmail.com", roles = { "SCRAP_DEALER" })
     void testGetScrapDealerById() throws Exception {
         UUID dealerId = UUID.randomUUID();
         when(scrapDealerService.getScrapDealerById(dealerId)).thenReturn(scrapDealer);
@@ -211,17 +211,17 @@ class ScrapDealerControllerTest {
 
     @Test
     @DisplayName("Test deleting ScrapDealer by ID")
-    @WithMockUser(username = "fe5d9416-8c91-49ec-93c5-1e83d7c5d913", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "fe5d9416-8c91-49ec-93c5-1e83d7c5d913", roles = { "SCRAP_DEALER" })
     void testDeleteScrapDealerById() throws Exception {
         UUID dealerId = UUID.randomUUID();
-    
+
         mockMvc.perform(delete("/scrapdealers/" + dealerId))
-            .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("Test retrieving empty ScrapDealer list")
-    @WithMockUser(username = "sd@gmail.com", roles = {"SCRAP_DEALER"})
+    @WithMockUser(username = "sd@gmail.com", roles = { "SCRAP_DEALER" })
     void testGetAllScrapDealers_EmptyList() throws Exception {
         when(scrapDealerService.getAllDealers()).thenReturn(new ArrayList<>());
 

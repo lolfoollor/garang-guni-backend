@@ -1,11 +1,14 @@
 package sg.edu.ntu.garang_guni_backend.services.impls;
 
+import java.util.Set;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sg.edu.ntu.garang_guni_backend.entities.User;
+import sg.edu.ntu.garang_guni_backend.entities.UserRole;
 import sg.edu.ntu.garang_guni_backend.exceptions.UserExistsException;
 import sg.edu.ntu.garang_guni_backend.exceptions.UserNotFoundException;
 import sg.edu.ntu.garang_guni_backend.repositories.UserRepository;
@@ -19,17 +22,38 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public UserServiceImpl(
-        PasswordEncoder passwordEncoder,
-        UserRepository userRepository) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
 
+    @Transactional
     @Override
-    public User getUser(UUID id) {
+    public User createUser(User userToBeCreated) {
+        String email = userToBeCreated.getEmail();
+        if (userRepository.existsByEmail(email)) {
+            throw new UserExistsException(email);
+        }
+
+        String encodedPassword = passwordEncoder.encode(userToBeCreated.getPassword());
+        User newUser = User.builder().email(email).password(encodedPassword)
+                .username(userToBeCreated.getUsername()).roles(Set.of(UserRole.USER))
+                .isEnabled(true).build();
+
+        return userRepository.save(newUser);
+    }
+
+    @Override
+    public User getUserById(UUID id) {
         logger.info("Retrieving user with id {}", id);
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        logger.info("Retrieving user with email {}", email);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     @Override
@@ -44,8 +68,7 @@ public class UserServiceImpl implements UserService {
 
         User dbUser = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 
-        dbUser.setFirstName(user.getFirstName());
-        dbUser.setLastName(user.getLastName());
+        dbUser.setUsername(user.getUsername());
         dbUser.setEmail(email);
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
