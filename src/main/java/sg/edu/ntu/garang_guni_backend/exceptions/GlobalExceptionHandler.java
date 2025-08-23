@@ -270,7 +270,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidTokenException.class)
     public ProblemDetail handleInvalidTokenException(
-            InvalidDateException ex,
+            InvalidTokenException ex,
             HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
