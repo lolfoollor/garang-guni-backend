@@ -9,14 +9,17 @@ permissions:
 jobs:
   build-and-run:
     runs-on: ubuntu-latest
-
+    environment: development
+    
     env:
       SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
       SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
-      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_PORT: ${{ secrets.DB_PORT }}
+      POSTGRES_DB_HOST: ${{ secrets.POSTGRES_DB_HOST }}
+      POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}
+      SPRING_REDIS_HOST: ${{secrets.SPRING_REDIS_HOST}}
+      SPRING_REDIS_PORT: ${{secrets.SPRING_REDIS_PORT}}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -68,14 +71,16 @@ jobs:
   jmeter-load-test:
     runs-on: ubuntu-latest
     needs: build-and-run
+    environment: development
 
     env:
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
         SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
-        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
+        POSTGRES_DB_HOST: ${{ secrets.POSTGRES_DB_HOST }}
+        POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}
+        SPRING_REDIS_HOST: ${{secrets.SPRING_REDIS_HOST}}
+        SPRING_REDIS_PORT: ${{secrets.SPRING_REDIS_PORT}}
 
     steps:
       - name: Checkout repository
@@ -116,14 +121,16 @@ jobs:
   jmeter-performance-test:
     runs-on: ubuntu-latest
     needs: build-and-run
+    environment: development
 
     env:
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
         SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
-        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
+        POSTGRES_DB_HOST: ${{ secrets.POSTGRES_DB_HOST }}
+        POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}
+        SPRING_REDIS_HOST: ${{secrets.SPRING_REDIS_HOST}}
+        SPRING_REDIS_PORT: ${{secrets.SPRING_REDIS_PORT}}
 
     steps:
       - name: Checkout repository

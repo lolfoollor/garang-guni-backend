@@ -1,6 +1,7 @@
 package sg.edu.ntu.garang_guni_backend.configs.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -16,7 +17,8 @@ import sg.edu.ntu.garang_guni_backend.exceptions.ProblemDetailBuilder;
 @Component
 @Slf4j
 public class BearerTokenAccessDeniedHandler implements AccessDeniedHandler {
-    private ObjectMapper objectMapper;
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
+    private final ObjectMapper objectMapper;
 
     public BearerTokenAccessDeniedHandler(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;

@@ -61,6 +61,9 @@ public class User {
     @Column(name = "enabled")
     private boolean isEnabled;
 
+    @Column(name = "email_verified")
+    private boolean isEmailVerified;
+
     @Column(name = "contact_no")
     @Digits(fraction = 0, integer = 8, message = "Contact Number must be 8 digits")
     private String contactNo;
