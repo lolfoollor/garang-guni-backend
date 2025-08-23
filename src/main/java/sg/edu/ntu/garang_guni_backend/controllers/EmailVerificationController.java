@@ -36,7 +36,7 @@ public class EmailVerificationController {
 
     @GetMapping("/email/verify")
     public ResponseEntity<UserProfileResponse> verifyOtp(
-            @RequestParam("email") String email, @RequestParam("otp") String otp) {
+            @RequestParam String email, @RequestParam String otp) {
         User verifiedUser = emailVerificationService.verifyEmail(email, otp);
 
         return ResponseEntity.status(HttpStatus.OK)
