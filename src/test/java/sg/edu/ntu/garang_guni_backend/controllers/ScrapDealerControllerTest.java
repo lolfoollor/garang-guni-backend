@@ -20,12 +20,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import sg.edu.ntu.garang_guni_backend.entities.ScrapDealer;
+import sg.edu.ntu.garang_guni_backend.exceptions.ErrorType;
 import sg.edu.ntu.garang_guni_backend.services.ScrapDealerService;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 class ScrapDealerControllerTest {
 
@@ -78,7 +81,8 @@ class ScrapDealerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("First name is required. "));
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.REQUEST_VALIDATION_FAILED.getUri().toString()));
     }
 
     @Test
@@ -91,8 +95,8 @@ class ScrapDealerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(
-                        "First name should not exceed 20 characters. "));
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.REQUEST_VALIDATION_FAILED.getUri().toString()));
     }
 
     @Test
@@ -105,7 +109,8 @@ class ScrapDealerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Last name is required. "));
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.REQUEST_VALIDATION_FAILED.getUri().toString()));
     }
 
     @Test
@@ -118,8 +123,8 @@ class ScrapDealerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(
-                        "Last name should not exceed 20 characters. "));
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.REQUEST_VALIDATION_FAILED.getUri().toString()));
     }
 
     @Test
@@ -132,7 +137,8 @@ class ScrapDealerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email format must be valid. "));
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.REQUEST_VALIDATION_FAILED.getUri().toString()));
     }
 
     @Test
@@ -145,7 +151,8 @@ class ScrapDealerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email is required. "));
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.REQUEST_VALIDATION_FAILED.getUri().toString()));
     }
 
     @Test
@@ -158,7 +165,7 @@ class ScrapDealerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @Test
@@ -171,9 +178,8 @@ class ScrapDealerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(scrapDealer)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(
-                        "Phone number must be in the format +65 "
-                                + "followed by 8 digits starting with 6, 8, or 9. "));
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.REQUEST_VALIDATION_FAILED.getUri().toString()));
     }
 
     @Test

@@ -16,9 +16,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import sg.edu.ntu.garang_guni_backend.entities.Booking;
 import sg.edu.ntu.garang_guni_backend.entities.BookingRequest;
 import sg.edu.ntu.garang_guni_backend.entities.CollectionType;
@@ -29,7 +30,7 @@ import sg.edu.ntu.garang_guni_backend.exceptions.booking.BookingNotFoundExceptio
 import sg.edu.ntu.garang_guni_backend.repositories.BookingRepository;
 import sg.edu.ntu.garang_guni_backend.services.ItemService;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
     @Mock
     private BookingRepository bookingRepository;
@@ -46,20 +47,16 @@ class BookingServiceImplTest {
     private static Item sampleItem;
     private static Location sampleLocation;
     private static final String SAMPLE_USER_ID = "1111-1111-1111-1111";
-    private static final LocalDateTime SAMPLE_BOOKING_DATE_TIME = 
-            LocalDateTime.parse("2024-09-25T14:30:00");
-    private static final LocalDateTime SAMPLE_APPOINTMENT_DATE_TIME = 
-            LocalDateTime.parse("2024-09-27T14:30:00");   
+    private static final LocalDateTime SAMPLE_BOOKING_DATE_TIME = LocalDateTime.parse("2024-09-25T14:30:00");
+    private static final LocalDateTime SAMPLE_APPOINTMENT_DATE_TIME = LocalDateTime.parse("2024-09-27T14:30:00");
     private static final String SAMPLE_REMARKS = "What is this Test?";
     private static final String UPDATE_REMARKS = "What is this updated Test?";
     private static final String SAMPLE_ITEM_NAME = "Aluminium Cans";
     private static final String SAMPLE_ITEM_DESCRIPTION = "It's a metal can.";
     private static final String SAMPLE_LOCATION_NAME = "Fitzroy";
     private static final String SAMPLE_LOCATION_ADDRESS = "104 Cecil Street";
-    private static final BigDecimal SAMPLE_LOCATION_LAT =
-            BigDecimal.valueOf(1.281285);
-    private static final BigDecimal SAMPLE_LOCATION_LNG =
-            BigDecimal.valueOf(103.848961);
+    private static final BigDecimal SAMPLE_LOCATION_LAT = BigDecimal.valueOf(1.281285);
+    private static final BigDecimal SAMPLE_LOCATION_LNG = BigDecimal.valueOf(103.848961);
 
     @BeforeAll
     static void setUp() {
@@ -92,12 +89,12 @@ class BookingServiceImplTest {
                 .paymentMethod(PaymentMethod.VISA)
                 .remarks(UPDATE_REMARKS)
                 .build();
-        
+
         sampleItem = Item.builder()
                 .itemName(SAMPLE_ITEM_NAME)
                 .itemDescription(SAMPLE_ITEM_DESCRIPTION)
                 .build();
-        
+
         sampleBookingWithItems = Booking.builder()
                 .userId(SAMPLE_USER_ID)
                 .bookingDateTime(SAMPLE_BOOKING_DATE_TIME)
@@ -122,15 +119,14 @@ class BookingServiceImplTest {
     void createBookingTest() {
         UUID bookingId = UUID.randomUUID();
         when(bookingRepository.save(any(Booking.class)))
-            .thenAnswer(invocation ->  {
-                Booking savedBooking = invocation.getArgument(0);
-                savedBooking.setBookingId(bookingId);
-                return savedBooking;
-            });
-        
-        Booking createdBooking = 
-                bookingService.createBooking(sampleBookingRequest);
-        
+                .thenAnswer(invocation -> {
+                    Booking savedBooking = invocation.getArgument(0);
+                    savedBooking.setBookingId(bookingId);
+                    return savedBooking;
+                });
+
+        Booking createdBooking = bookingService.createBooking(sampleBookingRequest);
+
         assertEquals(bookingId, createdBooking.getBookingId());
         assertEquals(SAMPLE_USER_ID, createdBooking.getUserId());
         assertEquals(SAMPLE_BOOKING_DATE_TIME,
@@ -143,14 +139,14 @@ class BookingServiceImplTest {
         assertEquals(SAMPLE_REMARKS, createdBooking.getRemarks());
         verify(bookingRepository, times(1)).save(any(Booking.class));
     }
-    
+
     @DisplayName("Get Booking By Id - Successful")
     @Test
     void getBookingByIdTest() {
         UUID bookingId = UUID.randomUUID();
         when(bookingRepository.findById(any(UUID.class)))
                 .thenReturn(Optional.of(sampleBooking));
-        
+
         Booking retrievedBooking = bookingService.getBookingById(bookingId);
 
         assertNotEquals(sampleBooking, retrievedBooking);
@@ -172,7 +168,7 @@ class BookingServiceImplTest {
         UUID bookingId = UUID.randomUUID();
         when(bookingRepository.findById(any(UUID.class)))
                 .thenReturn(Optional.empty());
-        
+
         assertThrows(BookingNotFoundException.class,
                 () -> bookingService.getBookingById(bookingId));
     }
@@ -184,14 +180,13 @@ class BookingServiceImplTest {
         when(bookingRepository.findById(any(UUID.class)))
                 .thenReturn(Optional.of(new Booking(sampleBooking)));
         when(bookingRepository.save(any(Booking.class)))
-            .thenAnswer(invocation ->  {
-                Booking savedBooking = invocation.getArgument(0);
-                savedBooking.setBookingId(bookingId);
-                return savedBooking;
-            });
-        
-        Booking updatedBooking = 
-                bookingService.updateBooking(bookingId, updatedBookingDetails);
+                .thenAnswer(invocation -> {
+                    Booking savedBooking = invocation.getArgument(0);
+                    savedBooking.setBookingId(bookingId);
+                    return savedBooking;
+                });
+
+        Booking updatedBooking = bookingService.updateBooking(bookingId, updatedBookingDetails);
 
         assertNotEquals(updatedBookingDetails, updatedBooking);
         assertEquals(SAMPLE_USER_ID, updatedBooking.getUserId());
@@ -215,7 +210,7 @@ class BookingServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(BookingNotFoundException.class,
-            () -> bookingService.updateBooking(bookingId, updatedBookingDetails));
+                () -> bookingService.updateBooking(bookingId, updatedBookingDetails));
     }
 
     @DisplayName("Delete Booking - Successful")
@@ -224,9 +219,8 @@ class BookingServiceImplTest {
         UUID bookingId = UUID.randomUUID();
         when(bookingRepository.findById(any(UUID.class)))
                 .thenReturn(Optional.of(sampleBooking));
-        
-        Booking deletedBooking = 
-                bookingService.deleteBooking(bookingId);
+
+        Booking deletedBooking = bookingService.deleteBooking(bookingId);
 
         assertEquals(sampleBooking, deletedBooking);
         assertEquals(SAMPLE_USER_ID, deletedBooking.getUserId());
@@ -333,7 +327,7 @@ class BookingServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(BookingNotFoundException.class,
-            () -> bookingService.getAllItems(bookingId));
+                () -> bookingService.getAllItems(bookingId));
     }
 
     @DisplayName("Assign Location To New Booking - Successful")
@@ -341,15 +335,15 @@ class BookingServiceImplTest {
     void assignLocationToNewBookingTest() {
         UUID bookingId = UUID.randomUUID();
         when(bookingRepository.save(any(Booking.class)))
-            .thenAnswer(invocation ->  {
-                Booking savedBooking = invocation.getArgument(0);
-                savedBooking.setBookingId(bookingId);
-                return savedBooking;
-            });
+                .thenAnswer(invocation -> {
+                    Booking savedBooking = invocation.getArgument(0);
+                    savedBooking.setBookingId(bookingId);
+                    return savedBooking;
+                });
 
         Booking assignedBooking = bookingService
                 .assignLocationToNewBooking(sampleBooking, sampleLocation);
-        
+
         assertEquals(sampleLocation, assignedBooking.getLocation());
         assertEquals(bookingId, assignedBooking.getBookingId());
         assertEquals(SAMPLE_USER_ID, assignedBooking.getUserId());
@@ -369,17 +363,17 @@ class BookingServiceImplTest {
     void assignLocationToExistingBookingTest() {
         UUID bookingId = UUID.randomUUID();
         when(bookingRepository.findById(any(UUID.class)))
-            .thenReturn(Optional.of(sampleBooking));
+                .thenReturn(Optional.of(sampleBooking));
         when(bookingRepository.save(any(Booking.class)))
-            .thenAnswer(invocation ->  {
-                Booking savedBooking = invocation.getArgument(0);
-                savedBooking.setBookingId(bookingId);
-                return savedBooking;
-            });
+                .thenAnswer(invocation -> {
+                    Booking savedBooking = invocation.getArgument(0);
+                    savedBooking.setBookingId(bookingId);
+                    return savedBooking;
+                });
 
         Booking assignedBooking = bookingService
                 .assignLocationToExistingBooking(bookingId, sampleLocation);
-        
+
         assertEquals(sampleLocation, assignedBooking.getLocation());
         assertEquals(bookingId, assignedBooking.getBookingId());
         assertEquals(SAMPLE_USER_ID, assignedBooking.getUserId());
@@ -399,9 +393,9 @@ class BookingServiceImplTest {
     void assignLocationToNonExistingBookingTest() {
         UUID bookingId = UUID.randomUUID();
         when(bookingRepository.findById(any(UUID.class)))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         assertThrows(BookingNotFoundException.class, () -> bookingService
-            .assignLocationToExistingBooking(bookingId, sampleLocation));
+                .assignLocationToExistingBooking(bookingId, sampleLocation));
     }
 }

@@ -16,9 +16,10 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 import sg.edu.ntu.garang_guni_backend.entities.Image;
 import sg.edu.ntu.garang_guni_backend.entities.Item;
@@ -27,7 +28,7 @@ import sg.edu.ntu.garang_guni_backend.exceptions.image.ImageUnsupportedTypeExcep
 import sg.edu.ntu.garang_guni_backend.repositories.ImageRepository;
 import sg.edu.ntu.garang_guni_backend.utils.ImageUtils;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ImageServiceImplTest {
     @Mock
     private ImageRepository imgRepository;
@@ -53,7 +54,7 @@ class ImageServiceImplTest {
         });
 
         UUID savedImgUuid = imgService.uploadImage(file);
-        assertEquals(imageId, savedImgUuid, 
+        assertEquals(imageId, savedImgUuid,
                 "The saved Image id should be the same as the new Image id");
 
         verify(imgRepository, times(1)).save(any(Image.class));
@@ -201,11 +202,11 @@ class ImageServiceImplTest {
         UUID imageId = UUID.randomUUID();
         UUID itemId = UUID.randomUUID();
         Item item = Item.builder()
-                        .itemId(itemId)
-                        .itemName("Test item")
-                        .itemDescription("It's just an Item.")
-                        .build();
-        
+                .itemId(itemId)
+                .itemName("Test item")
+                .itemDescription("It's just an Item.")
+                .build();
+
         List<Image> imagesStored = new ArrayList<>();
 
         when(imgRepository.save(any(Image.class))).thenAnswer(invocation -> {
@@ -216,14 +217,14 @@ class ImageServiceImplTest {
         });
 
         UUID savedImgUuid = imgService.assignItemToNewImage(item, file);
-        assertEquals(imageId, savedImgUuid, 
-            "The saved Image id should be the same as the new Image id");
-        
+        assertEquals(imageId, savedImgUuid,
+                "The saved Image id should be the same as the new Image id");
+
         when(imgRepository.findById(savedImgUuid))
                 .thenReturn(imagesStored.stream()
-                .filter(image -> image.getImageId().equals(savedImgUuid))
-                .findFirst());
-        
+                        .filter(image -> image.getImageId().equals(savedImgUuid))
+                        .findFirst());
+
         UUID randomItemId = UUID.randomUUID();
         assertTrue(imgService.isLinked(savedImgUuid.toString(), itemId.toString()));
         verify(imgRepository, times(1)).save(any(Image.class));
@@ -233,9 +234,6 @@ class ImageServiceImplTest {
     @Test
     @DisplayName("Upload Image And Assign ItemId - Invalid image file")
     void uploadFileAndAssignItemIdTest() throws Exception {
-        when(file.getOriginalFilename()).thenReturn("test_text.txt");
-        when(file.getContentType()).thenReturn("text/plain");
-        when(file.getBytes()).thenReturn("text_data".getBytes());
         Item item = Item.builder()
                 .itemName("Test item")
                 .itemDescription("It's just an Item.")
@@ -244,7 +242,6 @@ class ImageServiceImplTest {
         assertThrows(ImageUnsupportedTypeException.class,
                 () -> imgService.assignItemToNewImage(item, file));
     }
-
 
     @Test
     @DisplayName("Assign Item To Existing Image - Successful")
@@ -256,16 +253,16 @@ class ImageServiceImplTest {
         image.setImageData(ImageUtils.compressImage("compressed_image_data".getBytes()));
 
         Item item = Item.builder()
-                        .itemName("Test item")
-                        .itemDescription("It's just an Item.")
-                        .build();
+                .itemName("Test item")
+                .itemDescription("It's just an Item.")
+                .build();
 
         when(imgRepository.findById(id)).thenReturn(Optional.of(image));
         when(imgRepository.save(any(Image.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         UUID imageId = imgService.assignItemToExistingImage(item, id);
-        
+
         assertEquals(id, imageId);
         verify(imgRepository, times(1)).save(any(Image.class));
         verify(imgRepository, times(1)).findById(any(UUID.class));
@@ -275,16 +272,16 @@ class ImageServiceImplTest {
     @DisplayName("Assign Item To Existing Image - Invalid image Id")
     void assignItemToNonExistingImageTest() {
         UUID id = UUID.randomUUID();
-    
+
         Item item = Item.builder()
-                        .itemName("Test item")
-                        .itemDescription("It's just an Item.")
-                        .build();
+                .itemName("Test item")
+                .itemDescription("It's just an Item.")
+                .build();
 
         when(imgRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ImageNotFoundException.class,
-            () -> imgService.assignItemToExistingImage(item, id));
+                () -> imgService.assignItemToExistingImage(item, id));
     }
 
     @Test
@@ -294,19 +291,19 @@ class ImageServiceImplTest {
         UUID itemId = UUID.randomUUID();
         UUID itemId2 = UUID.randomUUID();
         Item item = Item.builder()
-                        .itemId(itemId)
-                        .itemName("Test item")
-                        .itemDescription("It's just an Item.")
-                        .build();
+                .itemId(itemId)
+                .itemName("Test item")
+                .itemDescription("It's just an Item.")
+                .build();
 
         Image img = Image.builder()
-                        .imageId(imgId)
-                        .imageName("Test.png")
-                        .imageType("image/png")
-                        .imageData("Test_Img".getBytes())
-                        .item(item)
-                        .build();
-        
+                .imageId(imgId)
+                .imageName("Test.png")
+                .imageType("image/png")
+                .imageData("Test_Img".getBytes())
+                .item(item)
+                .build();
+
         when(imgRepository.findById(imgId)).thenReturn(Optional.of(img));
 
         assertTrue(imgService.isLinked(imgId.toString(), itemId.toString()));

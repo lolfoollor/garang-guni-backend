@@ -8,11 +8,12 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ImageUtilsTest {
 
     @Mock
@@ -48,7 +49,7 @@ class ImageUtilsTest {
         when(file.getOriginalFilename()).thenReturn("test_image.test.png");
         assertTrue(ImageUtils.isImage(file));
 
-    } 
+    }
 
     @DisplayName("isImage - Non Existant File or File Name")
     @Test
@@ -57,7 +58,7 @@ class ImageUtilsTest {
 
         when(file.getOriginalFilename()).thenReturn(null);
         assertFalse(ImageUtils.isImage(file));
-    } 
+    }
 
     @DisplayName("isImage - Invalid Extension")
     @Test
@@ -67,7 +68,7 @@ class ImageUtilsTest {
 
         when(file.getOriginalFilename()).thenReturn("test_image");
         assertFalse(ImageUtils.isImage(file));
-    } 
+    }
 
     @DisplayName("Convert Bytes[] To Base64")
     @Test

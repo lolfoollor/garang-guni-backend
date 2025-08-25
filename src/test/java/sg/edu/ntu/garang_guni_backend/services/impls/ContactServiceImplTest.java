@@ -11,13 +11,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import sg.edu.ntu.garang_guni_backend.entities.Contact;
 import sg.edu.ntu.garang_guni_backend.repositories.ContactRepository;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ContactServiceImplTest {
 
     @Mock
@@ -43,7 +44,7 @@ class ContactServiceImplTest {
 
         Contact contact = createSampleContact();
 
-        when(contactRepository.save(contact)).thenReturn(contact); 
+        when(contactRepository.save(contact)).thenReturn(contact);
 
         Contact savedContact = contactService.createContact(contact);
 
@@ -78,7 +79,7 @@ class ContactServiceImplTest {
 
         Contact contact = createSampleContact();
 
-        contact.setMessageContent("<script>alert('XSS');</script>"); 
+        contact.setMessageContent("<script>alert('XSS');</script>");
 
         Exception exception = assertThrows(ValidationException.class, () -> {
             contactService.createContact(contact);

@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,6 +27,7 @@ import sg.edu.ntu.garang_guni_backend.dtos.RegistrationRequest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuthIntegrationTest {
     @Autowired
@@ -43,15 +45,21 @@ class AuthIntegrationTest {
     @BeforeAll
     void setUp() throws Exception {
         uniqueEmail = "test" + UUID.randomUUID().toString() + "@test.com";
-        RegistrationRequest request = RegistrationRequest.builder().username("TestUsername")
-                .email(uniqueEmail).password("SuperSekretPassword1!").build();
+        RegistrationRequest request = RegistrationRequest.builder()
+                .username("TestUsername")
+                .email(uniqueEmail)
+                .password("SuperSekretPassword1!")
+                .build();
 
         String newRegisterationAsJson = objectMapper.writeValueAsString(request);
 
-        RequestBuilder registrationRequest = MockMvcRequestBuilders.post("/auth/register")
-                .contentType(MediaType.APPLICATION_JSON).content(newRegisterationAsJson);
+        RequestBuilder registrationRequest = MockMvcRequestBuilders
+                .post("/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newRegisterationAsJson);
 
-        String jsonResponse = mockMvc.perform(registrationRequest).andExpect(status().isCreated())
+        String jsonResponse = mockMvc.perform(registrationRequest)
+                .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
         jwtAccessToken = JsonPath.read(jsonResponse, "$.accessToken");

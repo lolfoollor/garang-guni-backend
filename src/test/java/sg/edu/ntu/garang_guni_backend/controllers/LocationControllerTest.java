@@ -74,6 +74,7 @@ class LocationControllerTest {
     private static final String SAMPLE_BOOKING_DATE_TIME_PLAIN = "2024-09-25T14:30:00";
     private static final String SAMPLE_APPOINTMENT_DATE_TIME_PLAIN = "2024-09-27T14:30:00";
     private static final String SAMPLE_REMARKS = "What is this Test?";
+    private static final String PROBLEM_DETAIL_CONTENT_TYPE = "application/problem+json";
 
     @BeforeAll
     void setUp() {
@@ -195,7 +196,7 @@ class LocationControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof LocationNotFoundException));
     }
@@ -279,7 +280,7 @@ class LocationControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof LocationNotFoundException));
     }
@@ -313,7 +314,7 @@ class LocationControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof LocationNotFoundException));
     }
@@ -328,7 +329,7 @@ class LocationControllerTest {
 
         mockMvc.perform(deleteRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof LocationNotFoundException));
     }
@@ -374,7 +375,7 @@ class LocationControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof LocationNotFoundException));
     }
@@ -393,7 +394,7 @@ class LocationControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof MethodArgumentNotValidException));
     }
@@ -467,7 +468,7 @@ class LocationControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof LocationNotFoundException));
     }
@@ -485,7 +486,7 @@ class LocationControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof BookingNotFoundException));
     }
@@ -564,7 +565,7 @@ class LocationControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof LocationNotFoundException));
     }
@@ -603,7 +604,7 @@ class LocationControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof MethodArgumentNotValidException));
     }
@@ -616,7 +617,7 @@ class LocationControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof MethodArgumentNotValidException));
     }

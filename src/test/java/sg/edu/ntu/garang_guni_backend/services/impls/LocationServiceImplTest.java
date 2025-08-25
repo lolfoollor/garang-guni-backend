@@ -16,9 +16,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import sg.edu.ntu.garang_guni_backend.entities.Booking;
 import sg.edu.ntu.garang_guni_backend.entities.CollectionType;
 import sg.edu.ntu.garang_guni_backend.entities.Location;
@@ -27,8 +28,8 @@ import sg.edu.ntu.garang_guni_backend.exceptions.location.LocationNotFoundExcept
 import sg.edu.ntu.garang_guni_backend.repositories.LocationRepository;
 import sg.edu.ntu.garang_guni_backend.services.BookingService;
 
-@SpringBootTest
- class LocationServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class LocationServiceImplTest {
     @Mock
     private LocationRepository locationRepository;
 
@@ -45,33 +46,29 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
     private static final String SAMPLE_LOCATION_ADDRESS = "104 Cecil Street";
     private static final String UPDATED_LOCATION_NAME = "My Home";
     private static final String UPDATED_LOCATION_ADDRESS = "100 Cecil Street";
-    private static final BigDecimal SAMPLE_LOCATION_LAT =
-            BigDecimal.valueOf(1.281285);
-    private static final BigDecimal SAMPLE_LOCATION_LNG =
-            BigDecimal.valueOf(103.848961);
+    private static final BigDecimal SAMPLE_LOCATION_LAT = BigDecimal.valueOf(1.281285);
+    private static final BigDecimal SAMPLE_LOCATION_LNG = BigDecimal.valueOf(103.848961);
     private static final UUID LOCATION_ID = UUID.randomUUID();
     private static final String SAMPLE_USER_ID = "1111-1111-1111-1111";
-    private static final LocalDateTime SAMPLE_BOOKING_DATE_TIME = 
-            LocalDateTime.parse("2024-09-25T14:30:00");
-    private static final LocalDateTime SAMPLE_APPOINTMENT_DATE_TIME = 
-            LocalDateTime.parse("2024-09-27T14:30:00");   
+    private static final LocalDateTime SAMPLE_BOOKING_DATE_TIME = LocalDateTime.parse("2024-09-25T14:30:00");
+    private static final LocalDateTime SAMPLE_APPOINTMENT_DATE_TIME = LocalDateTime.parse("2024-09-27T14:30:00");
     private static final String SAMPLE_REMARKS = "What is this Test?";
 
     @BeforeAll
     static void setUp() {
         sampleLocation = Location.builder()
-                                .locationName(SAMPLE_LOCATION_NAME)
-                                .locationAddress(SAMPLE_LOCATION_ADDRESS)
-                                .latitude(SAMPLE_LOCATION_LAT)
-                                .longitude(SAMPLE_LOCATION_LNG)
-                                .build();
+                .locationName(SAMPLE_LOCATION_NAME)
+                .locationAddress(SAMPLE_LOCATION_ADDRESS)
+                .latitude(SAMPLE_LOCATION_LAT)
+                .longitude(SAMPLE_LOCATION_LNG)
+                .build();
 
         updatedLocation = Location.builder()
-                                .locationName(UPDATED_LOCATION_NAME)
-                                .locationAddress(UPDATED_LOCATION_ADDRESS)
-                                .latitude(SAMPLE_LOCATION_LAT)
-                                .longitude(SAMPLE_LOCATION_LNG)
-                                .build();
+                .locationName(UPDATED_LOCATION_NAME)
+                .locationAddress(UPDATED_LOCATION_ADDRESS)
+                .latitude(SAMPLE_LOCATION_LAT)
+                .longitude(SAMPLE_LOCATION_LNG)
+                .build();
 
         sampleBooking = Booking.builder()
                 .userId(SAMPLE_USER_ID)
@@ -82,21 +79,21 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
                 .paymentMethod(PaymentMethod.VISA)
                 .remarks(SAMPLE_REMARKS)
                 .build();
-        
+
         sampleLocationWithBookings = Location.builder()
-                        .locationName(SAMPLE_LOCATION_NAME)
-                        .locationAddress(SAMPLE_LOCATION_ADDRESS)
-                        .latitude(SAMPLE_LOCATION_LAT)
-                        .longitude(SAMPLE_LOCATION_LNG)
-                        .bookings(List.of(sampleBooking))
-                        .build();
+                .locationName(SAMPLE_LOCATION_NAME)
+                .locationAddress(SAMPLE_LOCATION_ADDRESS)
+                .latitude(SAMPLE_LOCATION_LAT)
+                .longitude(SAMPLE_LOCATION_LNG)
+                .bookings(List.of(sampleBooking))
+                .build();
     }
 
     @DisplayName("Create Location - Successful")
     @Test
     void createLocationTest() {
         when(locationRepository.save(any(Location.class)))
-                .thenAnswer(invocation ->  {
+                .thenAnswer(invocation -> {
                     return invocation.getArgument(0);
                 });
         Location createdLocation = locationService.createLocation(sampleLocation);
@@ -139,7 +136,7 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
                 .thenReturn(Optional.empty());
 
         assertThrows(LocationNotFoundException.class,
-            () -> locationService.getLocationById(LOCATION_ID));
+                () -> locationService.getLocationById(LOCATION_ID));
     }
 
     @DisplayName("Update Location - Successful")
@@ -148,7 +145,7 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
         when(locationRepository.findById(LOCATION_ID))
                 .thenReturn(Optional.of(sampleLocation));
         when(locationRepository.save(any(Location.class)))
-                .thenAnswer(invocation ->  {
+                .thenAnswer(invocation -> {
                     return invocation.getArgument(0);
                 });
 
@@ -173,7 +170,7 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
     @DisplayName("Update Location - Invalid Id")
     @Test
     void updateLocationWithNonExistentIdTest() {
-        assertThrows(LocationNotFoundException.class, 
+        assertThrows(LocationNotFoundException.class,
                 () -> locationService.updateLocation(LOCATION_ID, updatedLocation));
     }
 
@@ -182,7 +179,7 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
     void deleteLocationTest() {
         when(locationRepository.findById(LOCATION_ID))
                 .thenReturn(Optional.of(sampleLocation));
-        
+
         Location popLocation = locationService.deleteLocation(LOCATION_ID);
         assertEquals(sampleLocation, popLocation);
         verify(locationRepository, times(1))
@@ -194,7 +191,7 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
     @DisplayName("Delete Location - Invalid Id")
     @Test
     void deleteLocationWithNonExistentIdTest() {
-        assertThrows(LocationNotFoundException.class, 
+        assertThrows(LocationNotFoundException.class,
                 () -> locationService.deleteLocation(LOCATION_ID));
     }
 
@@ -204,12 +201,11 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
         when(locationRepository.findById(LOCATION_ID))
                 .thenReturn(Optional.of(sampleLocation));
         when(bookingService.assignLocationToNewBooking(
-            any(Booking.class), any(Location.class)))
+                any(Booking.class), any(Location.class)))
                 .thenReturn(new Booking(sampleBooking));
-        
-        Booking newBooking =
-            locationService.addNewBookingToLocation(LOCATION_ID, sampleBooking);
-        
+
+        Booking newBooking = locationService.addNewBookingToLocation(LOCATION_ID, sampleBooking);
+
         assertNotEquals(sampleBooking, newBooking);
         assertEquals(SAMPLE_USER_ID, newBooking.getUserId());
         assertEquals(SAMPLE_BOOKING_DATE_TIME,
@@ -228,10 +224,10 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
     void addNewBookingToInvalidLocationTest() {
         when(locationRepository.findById(LOCATION_ID))
                 .thenReturn(Optional.empty());
-        
+
         assertThrows(LocationNotFoundException.class,
-            () -> locationService
-                    .addNewBookingToLocation(LOCATION_ID, sampleBooking));
+                () -> locationService
+                        .addNewBookingToLocation(LOCATION_ID, sampleBooking));
     }
 
     @DisplayName("Add Exisiting Booking To Location - Successful")
@@ -241,12 +237,11 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
         when(locationRepository.findById(LOCATION_ID))
                 .thenReturn(Optional.of(sampleLocation));
         when(bookingService.assignLocationToExistingBooking(
-            any(UUID.class), any(Location.class)))
+                any(UUID.class), any(Location.class)))
                 .thenReturn(new Booking(sampleBooking));
-        
-        Booking newBooking =
-            locationService.addExisitingBookingToLocation(LOCATION_ID, bookingId);
-        
+
+        Booking newBooking = locationService.addExisitingBookingToLocation(LOCATION_ID, bookingId);
+
         assertNotEquals(sampleBooking, newBooking);
         assertEquals(SAMPLE_USER_ID, newBooking.getUserId());
         assertEquals(SAMPLE_BOOKING_DATE_TIME,
@@ -266,10 +261,10 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
         UUID bookingId = UUID.randomUUID();
         when(locationRepository.findById(LOCATION_ID))
                 .thenReturn(Optional.empty());
-        
+
         assertThrows(LocationNotFoundException.class,
-            () -> locationService
-                    .addExisitingBookingToLocation(LOCATION_ID, bookingId));
+                () -> locationService
+                        .addExisitingBookingToLocation(LOCATION_ID, bookingId));
     }
 
     @DisplayName("Get All Bookings - Successful")
@@ -277,7 +272,7 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
     void getAllBookingsTest() {
         when(locationRepository.findById(LOCATION_ID))
                 .thenReturn(Optional.of(sampleLocationWithBookings));
-        
+
         List<Booking> bookings = locationService.getAllBookings(LOCATION_ID);
         assertEquals(1, bookings.size());
         Booking retrievedBooking = bookings.get(0);
@@ -299,8 +294,8 @@ import sg.edu.ntu.garang_guni_backend.services.BookingService;
     void getAllBookingsWithInvalidLocationIdTest() {
         when(locationRepository.findById(LOCATION_ID))
                 .thenReturn(Optional.empty());
-        
+
         assertThrows(LocationNotFoundException.class,
-            () -> locationService.getAllBookings(LOCATION_ID));
+                () -> locationService.getAllBookings(LOCATION_ID));
     }
 }

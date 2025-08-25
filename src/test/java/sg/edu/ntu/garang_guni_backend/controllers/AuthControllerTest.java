@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import sg.edu.ntu.garang_guni_backend.dtos.LoginRequest;
 import sg.edu.ntu.garang_guni_backend.dtos.RegistrationRequest;
+import sg.edu.ntu.garang_guni_backend.exceptions.ErrorType;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,6 +34,7 @@ class AuthControllerTest {
     private static final String VALID_EMAIL = "test@example.com";
     private static final String VALID_PASSWORD = "P@ssword123";
     private static final String INVALID_PASSWORD = "password";
+    private static final String PROBLEM_DETAIL_CONTENT_TYPE = "application/problem+json";
 
     @Autowired
     private MockMvc mockMvc;
@@ -101,8 +103,9 @@ class AuthControllerTest {
 
         mockMvc.perform(registrationRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(notNullValue()));
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.REQUEST_VALIDATION_FAILED.getUri().toString()));
     }
 
     @DisplayName("Register with Exisiting User Email - Conflict")
@@ -117,8 +120,9 @@ class AuthControllerTest {
 
         mockMvc.perform(registrationRequest)
                 .andExpect(status().isConflict())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(notNullValue()));
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.RESOURCE_ALREADY_EXISTS.getUri().toString()));
     }
 
     @DisplayName("Login with Valid Credientials - Successful")
@@ -153,7 +157,9 @@ class AuthControllerTest {
 
         mockMvc.perform(loginRequest)
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.UNAUTHORIZED.getUri().toString()));
     }
 
     @DisplayName("Login with Unregistered Credentials - Unauthorized")
@@ -163,6 +169,8 @@ class AuthControllerTest {
 
         mockMvc.perform(loginRequest)
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.UNAUTHORIZED.getUri().toString()));
     }
 }
