@@ -10,6 +10,7 @@ logs/
 snyk-results.json
 jmeter.log
 test_results.jtl
+dev.sh
 
 ### STS ###
 .apt_generated

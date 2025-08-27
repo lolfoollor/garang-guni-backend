@@ -33,7 +33,30 @@ jobs:
         run: docker exec spring_boot_app ./mvnw spotbugs:check
 
       - name: Run unit tests and system tests
-        run: docker exec -e MAVEN_OPTS="-Xmx256m -Xms128m" spring_boot_app ./mvnw test
+        run: |
+            docker exec spring_boot_app ./mvnw test || {
+            echo "❌ Tests failed, showing recent logs:"
+            docker logs spring_boot_app --tail 100
+            exit 1
+            }
+      - name: Show Docker logs on failure
+        if: failure()
+        run: |
+          echo "=== FAILURE DEBUGGING ==="
+          echo "=== Docker Compose Status ==="
+          docker compose ps
+          
+          echo "=== Spring Boot App Logs (last 200 lines) ==="
+          docker logs spring_boot_app --tail 200
+          
+          echo "=== PostgreSQL Logs ==="
+          docker logs $(docker compose ps -q postgres) --tail 50 || echo "No postgres container"
+          
+          echo "=== Redis Logs ==="
+          docker logs $(docker compose ps -q redis) --tail 50 || echo "No redis container"
+          
+          echo "=== Docker Compose Environment ==="
+          docker exec spring_boot_app env | grep -E "(POSTGRES|SPRING|JWT)" | sort
 
   security:
     runs-on: ubuntu-latest
