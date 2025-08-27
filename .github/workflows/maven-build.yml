@@ -15,6 +15,8 @@ jobs:
       SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
       SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
+      SPRING_AUTH_PRIVATE_KEY: ${{secrets.SPRING_AUTH_PRIVATE_KEY}}
+      SPRING_AUTH_PUBLIC_KEY: ${{secrets.SPRING_AUTH_PUBLIC_KEY}}
       POSTGRES_DB_HOST: ${{ secrets.POSTGRES_DB_HOST }}
       POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}
       SPRING_REDIS_HOST: ${{secrets.SPRING_REDIS_HOST}}
@@ -31,7 +33,7 @@ jobs:
         run: docker exec spring_boot_app ./mvnw spotbugs:check
 
       - name: Run unit tests and system tests
-        run: docker exec spring_boot_app ./mvnw test
+        run: docker exec -e MAVEN_OPTS="-Xmx256m -Xms128m" spring_boot_app ./mvnw test
 
   security:
     runs-on: ubuntu-latest
@@ -44,6 +46,7 @@ jobs:
         uses: snyk/actions/maven-3-jdk-17@master
         continue-on-error: true
         with:
+          command: test
           args: --sarif-file-output=snyk.sarif
           json: true
         env:
@@ -56,16 +59,12 @@ jobs:
       
       - name: Check for Critical vulnerabilities
         run: |
-          if [ -f snyk.json ]; then
-            if grep -q "Critical" snyk.json; then
-              echo "Critical vulnerabilities found!"
-              exit 1
-            else
-              echo "No critical vulnerabilities found."
-            fi
-          else
-            echo "No Snyk report generated."
+          CRITICAL_COUNT=$(jq '[.vulnerabilities[] | select(.severityWithCritical=="critical")] | length' snyk.json)
+          if [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "Critical vulnerabilities found!"
             exit 1
+          else
+            echo "No critical vulnerabilities."
           fi
     
   jmeter-load-test:
@@ -77,6 +76,8 @@ jobs:
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
         SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
+        SPRING_AUTH_PRIVATE_KEY: ${{secrets.SPRING_AUTH_PRIVATE_KEY}}
+        SPRING_AUTH_PUBLIC_KEY: ${{secrets.SPRING_AUTH_PUBLIC_KEY}}
         POSTGRES_DB_HOST: ${{ secrets.POSTGRES_DB_HOST }}
         POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}
         SPRING_REDIS_HOST: ${{secrets.SPRING_REDIS_HOST}}
@@ -127,6 +128,8 @@ jobs:
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
         SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
+        SPRING_AUTH_PRIVATE_KEY: ${{secrets.SPRING_AUTH_PRIVATE_KEY}}
+        SPRING_AUTH_PUBLIC_KEY: ${{secrets.SPRING_AUTH_PUBLIC_KEY}}
         POSTGRES_DB_HOST: ${{ secrets.POSTGRES_DB_HOST }}
         POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}
         SPRING_REDIS_HOST: ${{secrets.SPRING_REDIS_HOST}}
