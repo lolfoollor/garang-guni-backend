@@ -53,6 +53,8 @@ class ItemControllerTest {
     private static final String SAMPLE_ITEM_DESCRIPTION = "It's a metal can.";
     private static final String UPDATED_ITEM_NAME = "Steel Cans";
     private static final String UPDATED_ITEM_DESCRIPTION = "It's STILL a metal can.";
+    private static final String PROBLEM_DETAIL_CONTENT_TYPE = "application/problem+json";
+
     private static Item sampleItem;
     private static Item updatedItem;
     private static Item itemWithoutName;
@@ -131,7 +133,7 @@ class ItemControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ItemNotFoundException));
     }
@@ -167,7 +169,7 @@ class ItemControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ItemNotFoundException));
     }
@@ -197,7 +199,7 @@ class ItemControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ItemNotFoundException));
     }
@@ -211,7 +213,7 @@ class ItemControllerTest {
 
         mockMvc.perform(deleteRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ItemNotFoundException));
     }
@@ -246,7 +248,7 @@ class ItemControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ItemNotFoundException));
     }
@@ -268,7 +270,7 @@ class ItemControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ImageUnsupportedTypeException));
     }
@@ -321,7 +323,7 @@ class ItemControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ItemNotFoundException));
     }
@@ -339,7 +341,7 @@ class ItemControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ImageNotFoundException));
     }
@@ -405,7 +407,7 @@ class ItemControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ItemNotFoundException));
     }
@@ -484,7 +486,7 @@ class ItemControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ItemNotFoundException));
     }
@@ -517,7 +519,7 @@ class ItemControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof MethodArgumentNotValidException));
     }
@@ -531,7 +533,7 @@ class ItemControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof MethodArgumentNotValidException));
     }

@@ -1,6 +1,7 @@
 package sg.edu.ntu.garang_guni_backend.configs.security.details;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +20,7 @@ public class CustomUserDetails implements UserDetails {
         this.displayName = displayName;
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
+        this.authorities = List.copyOf(authorities);
         this.enabled = enabled;
     }
 
@@ -35,7 +36,7 @@ public class CustomUserDetails implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return java.util.Collections.unmodifiableCollection(authorities);
     }
 
     /**
@@ -55,6 +56,7 @@ public class CustomUserDetails implements UserDetails {
 
     /**
      * Returns the unique identifier used for authentication.
+     * 
      * <p>
      * Note: Although it's named getUsername(), this returns the user's email
      * because the application uses email as its primary login ID.

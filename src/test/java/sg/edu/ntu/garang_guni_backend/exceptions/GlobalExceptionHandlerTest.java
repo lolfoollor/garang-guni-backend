@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -20,6 +21,7 @@ import sg.edu.ntu.garang_guni_backend.services.ContactService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @WithMockUser(username = "testuser", roles = { "USER" })
 class GlobalExceptionHandlerTest {
     @Autowired
@@ -40,7 +42,8 @@ class GlobalExceptionHandlerTest {
                         + " \"phoneNumber\": \"+6598765432\", \"subject\": \"Test\","
                         + " \"messageContent\": \"This is a test message.\" }"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("Processing error"));
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.UNKNOWN_SERVER_ERROR.getUri().toString()));
     }
 
     @Test
@@ -55,7 +58,7 @@ class GlobalExceptionHandlerTest {
                         + " \"phoneNumber\": \"+6598765432\", \"subject\": \"Test\","
                         + " \"messageContent\": \"This is a test message.\" }"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value(
-                        "An error occurred. Please contact support."));
+                .andExpect(jsonPath("$.type").value(
+                        ErrorType.UNKNOWN_SERVER_ERROR.getUri().toString()));
     }
 }

@@ -3,6 +3,7 @@ package sg.edu.ntu.garang_guni_backend.services.impls;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,10 +15,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,10 +33,10 @@ import sg.edu.ntu.garang_guni_backend.entities.User;
 import sg.edu.ntu.garang_guni_backend.entities.UserRole;
 import sg.edu.ntu.garang_guni_backend.exceptions.UserExistsException;
 import sg.edu.ntu.garang_guni_backend.mappers.AuthRequestUserMapper;
+import sg.edu.ntu.garang_guni_backend.services.EmailVerificationService;
 import sg.edu.ntu.garang_guni_backend.services.UserService;
 
-@SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
     private static final String VALID_USERNAME = "Test";
     private static final String VALID_EMAIL = "test@example.com";
@@ -54,6 +55,9 @@ class AuthServiceImplTest {
 
     @Mock
     private JwtService jwtService;
+
+    @Mock
+    private EmailVerificationService emailVerificationService;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -90,6 +94,8 @@ class AuthServiceImplTest {
     void registerSuccessTest() {
         when(authRequestUserMapper.toEntity(registrationRequest)).thenReturn(user);
         when(userService.createUser(user)).thenReturn(user);
+        doNothing().when(emailVerificationService)
+                .sendVerificationOtp(user.getId(), user.getEmail());
         when(jwtService.generateToken(any())).thenReturn(FAKE_JWT_TOKEN);
 
         AuthResponse response = authService.register(registrationRequest);

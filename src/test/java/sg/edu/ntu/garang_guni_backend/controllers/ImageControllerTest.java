@@ -33,6 +33,7 @@ class ImageControllerTest {
     private static MockMultipartFile fakeImgFile;
     private static MockMultipartFile updatedImgFile;
     private static final String FAKE_ID = "00000000-0000-0000-0000-000000000000";
+    private static final String PROBLEM_DETAIL_CONTENT_TYPE = "application/problem+json";
 
     @BeforeAll
     void setUp() {
@@ -166,7 +167,7 @@ class ImageControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ImageUnsupportedTypeException));
     }
@@ -178,7 +179,7 @@ class ImageControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ImageNotFoundException));
     }
@@ -191,7 +192,7 @@ class ImageControllerTest {
 
         mockMvc.perform(updateRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ImageNotFoundException));
     }
@@ -203,7 +204,7 @@ class ImageControllerTest {
 
         mockMvc.perform(deleteRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ImageNotFoundException));
     }

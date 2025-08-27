@@ -9,14 +9,19 @@ permissions:
 jobs:
   build-and-run:
     runs-on: ubuntu-latest
-
+    environment: development
+    
     env:
       SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
       SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
-      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_PORT: ${{ secrets.DB_PORT }}
+      SPRING_AUTH_PRIVATE_KEY: ${{secrets.SPRING_AUTH_PRIVATE_KEY}}
+      SPRING_AUTH_PUBLIC_KEY: ${{secrets.SPRING_AUTH_PUBLIC_KEY}}
+      POSTGRES_DB_HOST: ${{ secrets.POSTGRES_DB_HOST }}
+      POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}
+      SPRING_REDIS_HOST: ${{secrets.SPRING_REDIS_HOST}}
+      SPRING_REDIS_PORT: ${{secrets.SPRING_REDIS_PORT}}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -28,7 +33,30 @@ jobs:
         run: docker exec spring_boot_app ./mvnw spotbugs:check
 
       - name: Run unit tests and system tests
-        run: docker exec spring_boot_app ./mvnw test
+        run: |
+            docker exec spring_boot_app ./mvnw test || {
+            echo "❌ Tests failed, showing recent logs:"
+            docker logs spring_boot_app --tail 100
+            exit 1
+            }
+      - name: Show Docker logs on failure
+        if: failure()
+        run: |
+          echo "=== FAILURE DEBUGGING ==="
+          echo "=== Docker Compose Status ==="
+          docker compose ps
+          
+          echo "=== Spring Boot App Logs (last 200 lines) ==="
+          docker logs spring_boot_app --tail 200
+          
+          echo "=== PostgreSQL Logs ==="
+          docker logs $(docker compose ps -q postgres) --tail 50 || echo "No postgres container"
+          
+          echo "=== Redis Logs ==="
+          docker logs $(docker compose ps -q redis) --tail 50 || echo "No redis container"
+          
+          echo "=== Docker Compose Environment ==="
+          docker exec spring_boot_app env | grep -E "(POSTGRES|SPRING|JWT)" | sort
 
   security:
     runs-on: ubuntu-latest
@@ -41,6 +69,7 @@ jobs:
         uses: snyk/actions/maven-3-jdk-17@master
         continue-on-error: true
         with:
+          command: test
           args: --sarif-file-output=snyk.sarif
           json: true
         env:
@@ -53,29 +82,29 @@ jobs:
       
       - name: Check for Critical vulnerabilities
         run: |
-          if [ -f snyk.json ]; then
-            if grep -q "Critical" snyk.json; then
-              echo "Critical vulnerabilities found!"
-              exit 1
-            else
-              echo "No critical vulnerabilities found."
-            fi
-          else
-            echo "No Snyk report generated."
+          CRITICAL_COUNT=$(jq '[.vulnerabilities[] | select(.severityWithCritical=="critical")] | length' snyk.json)
+          if [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "Critical vulnerabilities found!"
             exit 1
+          else
+            echo "No critical vulnerabilities."
           fi
     
   jmeter-load-test:
     runs-on: ubuntu-latest
     needs: build-and-run
+    environment: development
 
     env:
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
         SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
-        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
+        SPRING_AUTH_PRIVATE_KEY: ${{secrets.SPRING_AUTH_PRIVATE_KEY}}
+        SPRING_AUTH_PUBLIC_KEY: ${{secrets.SPRING_AUTH_PUBLIC_KEY}}
+        POSTGRES_DB_HOST: ${{ secrets.POSTGRES_DB_HOST }}
+        POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}
+        SPRING_REDIS_HOST: ${{secrets.SPRING_REDIS_HOST}}
+        SPRING_REDIS_PORT: ${{secrets.SPRING_REDIS_PORT}}
 
     steps:
       - name: Checkout repository
@@ -116,14 +145,18 @@ jobs:
   jmeter-performance-test:
     runs-on: ubuntu-latest
     needs: build-and-run
+    environment: development
 
     env:
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
         SPRING_DATASOURCE_DB: ${{ secrets.SPRING_DATASOURCE_DB }}
-        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
+        SPRING_AUTH_PRIVATE_KEY: ${{secrets.SPRING_AUTH_PRIVATE_KEY}}
+        SPRING_AUTH_PUBLIC_KEY: ${{secrets.SPRING_AUTH_PUBLIC_KEY}}
+        POSTGRES_DB_HOST: ${{ secrets.POSTGRES_DB_HOST }}
+        POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}
+        SPRING_REDIS_HOST: ${{secrets.SPRING_REDIS_HOST}}
+        SPRING_REDIS_PORT: ${{secrets.SPRING_REDIS_PORT}}
 
     steps:
       - name: Checkout repository

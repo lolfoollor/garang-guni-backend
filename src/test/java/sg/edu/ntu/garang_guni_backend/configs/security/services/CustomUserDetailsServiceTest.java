@@ -21,9 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import sg.edu.ntu.garang_guni_backend.configs.EmailConfig;
 import sg.edu.ntu.garang_guni_backend.configs.security.details.CustomUserDetails;
 import sg.edu.ntu.garang_guni_backend.entities.User;
 import sg.edu.ntu.garang_guni_backend.entities.UserRole;
+import sg.edu.ntu.garang_guni_backend.exceptions.email.EmailNotVerifiedException;
 import sg.edu.ntu.garang_guni_backend.repositories.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +33,9 @@ class CustomUserDetailsServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private EmailConfig emailConfig;
 
     @InjectMocks
     private CustomUserDetailsService customUserDetailsService;
@@ -53,6 +58,7 @@ class CustomUserDetailsServiceTest {
     @Test
     void loadUserByUsernameTest() {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(emailConfig.isVerificationRequired()).thenReturn(false);
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
         CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
@@ -82,6 +88,18 @@ class CustomUserDetailsServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class,
+                () -> customUserDetailsService.loadUserByUsername(email));
+        verify(userRepository, times(1)).findByEmail(email);
+    }
+
+    @DisplayName("Load user by username - User not Verified")
+    @Test
+    void loadNotVerifiedUserByUsernameTest() {
+        String email = "nonexistent@example.com";
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(emailConfig.isVerificationRequired()).thenReturn(true);
+
+        assertThrows(EmailNotVerifiedException.class,
                 () -> customUserDetailsService.loadUserByUsername(email));
         verify(userRepository, times(1)).findByEmail(email);
     }

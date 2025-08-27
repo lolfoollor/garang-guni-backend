@@ -1,13 +1,15 @@
 package sg.edu.ntu.garang_guni_backend.exceptions;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 
 public class ProblemDetailBuilder {
 
-    private ProblemDetail problemDetail;
+    private final ProblemDetail problemDetail;
 
     private ProblemDetailBuilder(HttpStatusCode status) {
         this.problemDetail = ProblemDetail.forStatus(status);
@@ -51,7 +53,19 @@ public class ProblemDetailBuilder {
     }
 
     public ProblemDetail build() {
-        return this.problemDetail;
+        ProblemDetail copy = ProblemDetail.forStatus(this.problemDetail.getStatus());
+        copy.setTitle(this.problemDetail.getTitle());
+        copy.setDetail(this.problemDetail.getDetail());
+        copy.setType(this.problemDetail.getType());
+        copy.setInstance(this.problemDetail.getInstance());
+
+        Map<String, Object> originalProps = problemDetail.getProperties();
+        if (originalProps != null) {
+            Map<String, Object> copyProps = new LinkedHashMap<>(originalProps);
+            copyProps.forEach(copy::setProperty);
+        }
+
+        return copy;
     }
 
 }

@@ -18,22 +18,26 @@ import sg.edu.ntu.garang_guni_backend.entities.User;
 import sg.edu.ntu.garang_guni_backend.entities.UserRole;
 import sg.edu.ntu.garang_guni_backend.mappers.AuthRequestUserMapper;
 import sg.edu.ntu.garang_guni_backend.services.AuthService;
+import sg.edu.ntu.garang_guni_backend.services.EmailVerificationService;
 import sg.edu.ntu.garang_guni_backend.services.UserService;
 
 @Service
 public class AuthServiceImpl implements AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
+    private final EmailVerificationService emailVerificationService;
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final AuthRequestUserMapper authRequestUserMapper;
     private final JwtService jwtService;
 
     public AuthServiceImpl(UserService userService, AuthenticationManager authenticationManager,
-            AuthRequestUserMapper authRequestUserMapper, JwtService jwtService) {
+            AuthRequestUserMapper authRequestUserMapper, JwtService jwtService,
+            EmailVerificationService emailVerificationService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.authRequestUserMapper = authRequestUserMapper;
         this.jwtService = jwtService;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @Override
@@ -43,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
         User userToCreate = authRequestUserMapper.toEntity(registrationRequest);
         User newUser = userService.createUser(userToCreate);
         logger.info("User created with ID: {}", newUser.getId());
+        emailVerificationService.sendVerificationOtp(newUser.getId(), newUser.getEmail());
 
         JwtUserDetails details = new JwtUserDetails(
                 newUser.getId(),

@@ -10,7 +10,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.mock.web.MockHttpServletRequest;
-
 import sg.edu.ntu.garang_guni_backend.exceptions.location.LocationNotFoundException;
 
 class LocationExceptionTest {

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -18,12 +19,15 @@ import sg.edu.ntu.garang_guni_backend.entities.Contact;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class ContactControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    private static final String PROBLEM_DETAIL_CONTENT_TYPE = "application/problem+json";
 
     @DisplayName("Test for creating a valid contact form")
     @Test
@@ -117,7 +121,7 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @DisplayName("Test creating valid contact with last name only")
@@ -160,7 +164,7 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @DisplayName("Test creating contact with empty phoneNumber and email")
@@ -184,7 +188,7 @@ class ContactControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
                 .andExpect(content()
-                        .contentType(MediaType.APPLICATION_JSON));
+                        .contentType(PROBLEM_DETAIL_CONTENT_TYPE));
     }
 
     @DisplayName("Test creating contact with invalid phone number")
@@ -207,8 +211,7 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message")
-                        .exists());
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @DisplayName("Test creating contact with invalid email")
@@ -231,7 +234,7 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @DisplayName("Test creating contact with empty subject")
@@ -254,8 +257,8 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @DisplayName("Test creating contact with too long subject")
@@ -278,7 +281,7 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @DisplayName("Test creating contact with empty messageContent")
@@ -301,8 +304,8 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @DisplayName("Test creating contact with very long message content")
@@ -330,7 +333,7 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @DisplayName("Test creating contact with empty request body")
@@ -345,7 +348,7 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.type").exists());
     }
 
     @DisplayName("Test creating contact with XSS attack in message content")

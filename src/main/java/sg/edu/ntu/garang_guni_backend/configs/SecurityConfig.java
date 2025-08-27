@@ -74,7 +74,7 @@ public class SecurityConfig {
                         .sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage())));
 
         http.authorizeHttpRequests(
-                authorize -> authorize.requestMatchers("/auth/**", "/contacts/**", "/rates/**")
+                authorize -> authorize.requestMatchers("/auth/**", "/contacts/**", "/rates/**", "/api/verification/**")
                         .permitAll().anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 -> oauth2

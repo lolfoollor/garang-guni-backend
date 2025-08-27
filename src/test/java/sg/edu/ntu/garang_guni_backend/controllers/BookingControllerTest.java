@@ -81,6 +81,7 @@ class BookingControllerTest {
     private static final String SAMPLE_IMAGE_TYPE = "image/png";
     private static final byte[] SAMPLE_FILE_DATA = "This is a test image".getBytes();
     private static final byte[] SAMPLE_FILE_DATA2 = "This is a test image2".getBytes();
+    private static final String PROBLEM_DETAIL_CONTENT_TYPE = "application/problem+json";
 
     @BeforeAll
     void setUp() {
@@ -220,7 +221,7 @@ class BookingControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof LocationNotFoundException));
     }
@@ -280,7 +281,7 @@ class BookingControllerTest {
         RequestBuilder getRequest = MockMvcRequestBuilders.get("/bookings/" + createdBookingId);
 
         mockMvc.perform(getRequest).andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof BookingNotFoundException));
     }
@@ -324,7 +325,7 @@ class BookingControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof BookingNotFoundException));
     }
@@ -346,7 +347,7 @@ class BookingControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof MethodArgumentNotValidException));
     }
@@ -369,7 +370,7 @@ class BookingControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof BookingNotFoundException));
     }
@@ -384,7 +385,7 @@ class BookingControllerTest {
 
         mockMvc.perform(deleteRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof BookingNotFoundException));
     }
@@ -423,7 +424,7 @@ class BookingControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof BookingNotFoundException));
     }
@@ -444,7 +445,7 @@ class BookingControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof MethodArgumentNotValidException));
     }
@@ -485,7 +486,7 @@ class BookingControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof BookingNotFoundException));
     }
@@ -504,7 +505,7 @@ class BookingControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof ItemNotFoundException));
     }
@@ -521,7 +522,7 @@ class BookingControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof BookingNotFoundException));
     }
@@ -582,7 +583,7 @@ class BookingControllerTest {
 
         mockMvc.perform(getAllItemRequest)
                 .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof BookingNotFoundException));
     }
@@ -632,7 +633,7 @@ class BookingControllerTest {
 
         mockMvc.perform(postRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(PROBLEM_DETAIL_CONTENT_TYPE))
                 .andExpect(result -> assertTrue(
                         result.getResolvedException() instanceof MethodArgumentNotValidException));
     }

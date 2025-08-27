@@ -18,6 +18,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import sg.edu.ntu.garang_guni_backend.exceptions.booking.BookingNotFoundException;
+import sg.edu.ntu.garang_guni_backend.exceptions.email.EmailAlreadyVerifiedException;
+import sg.edu.ntu.garang_guni_backend.exceptions.email.EmailNotVerifiedException;
+import sg.edu.ntu.garang_guni_backend.exceptions.email.InvalidTokenException;
 import sg.edu.ntu.garang_guni_backend.exceptions.image.ImageNotFoundException;
 import sg.edu.ntu.garang_guni_backend.exceptions.image.ImageUtilsException;
 import sg.edu.ntu.garang_guni_backend.exceptions.item.ItemNotFoundException;
@@ -235,6 +238,51 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    @ExceptionHandler(EmailNotVerifiedException.class)
+    public ProblemDetail handleEmailNotVerifiedException(
+            EmailNotVerifiedException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withTitle("Email verification required")
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.UNAUTHORIZED)
+                .withInstance(request.getRequestURI())
+                .build();
+    }
+
+    @ExceptionHandler(EmailAlreadyVerifiedException.class)
+    public ProblemDetail handleEmailAlreadyVerifiedException(
+            EmailAlreadyVerifiedException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withTitle("Email verification not required")
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.EMAIL_ALREADY_VERIFIED)
+                .withInstance(request.getRequestURI())
+                .build();
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ProblemDetail handleInvalidTokenException(
+            InvalidTokenException ex,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        return ProblemDetailBuilder
+                .forStatus(status)
+                .withTitle("Email validation failed")
+                .withDetail(ex.getMessage())
+                .withErrorType(ErrorType.EMAIL_VERIFICATION_FAILED)
+                .withInstance(request.getRequestURI())
+                .build();
+    }
+
     /**
      * Handles any general exceptions thrown during the application's execution. If
      * the exception is
@@ -258,7 +306,7 @@ public class GlobalExceptionHandler {
 
         return ProblemDetailBuilder
                 .forStatus(status)
-                .withTitle("Internal server error")
+                .withTitle("Something went wrong")
                 .withDetail(ex.getMessage())
                 .withErrorType(ErrorType.UNKNOWN_SERVER_ERROR)
                 .withInstance(request.getRequestURI())
